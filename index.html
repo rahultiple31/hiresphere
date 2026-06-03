@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HireSphere | Talent Marketplace Platform</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#workspace" aria-label="HireSphere workspace">
+          <span class="brand-mark">HS</span>
+          <span>
+            <strong>HireSphere</strong>
+            <small>Talent OS</small>
+          </span>
+        </a>
+
+        <nav class="nav-groups">
+          <button class="nav-item active" data-view="workspace" type="button">
+            <span class="nav-icon">01</span>
+            Workspace
+          </button>
+          <button class="nav-item" data-view="jobs" type="button">
+            <span class="nav-icon">02</span>
+            Jobs
+          </button>
+          <button class="nav-item" data-view="projects" type="button">
+            <span class="nav-icon">03</span>
+            Projects
+          </button>
+          <button class="nav-item" data-view="network" type="button">
+            <span class="nav-icon">04</span>
+            Network
+          </button>
+          <button class="nav-item" data-view="interview" type="button">
+            <span class="nav-icon">05</span>
+            Interview
+          </button>
+          <button class="nav-item" data-view="profile" type="button">
+            <span class="nav-icon">06</span>
+            Profile
+          </button>
+          <button class="nav-item" data-view="admin" type="button">
+            <span class="nav-icon">07</span>
+            HR Studio
+          </button>
+          <button class="nav-item" data-view="architecture" type="button">
+            <span class="nav-icon">08</span>
+            Scale
+          </button>
+        </nav>
+
+        <div class="role-switcher" aria-label="Role switcher">
+          <span>Active Role</span>
+          <div class="segmented" role="tablist" aria-label="Choose user role">
+            <button class="role-tab active" data-role="candidate" type="button">Candidate</button>
+            <button class="role-tab" data-role="recruiter" type="button">HR</button>
+            <button class="role-tab" data-role="owner" type="button">Owner</button>
+            <button class="role-tab" data-role="interviewer" type="button">Interviewer</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <label class="global-search" for="globalSearch">
+            <span>Search</span>
+            <input id="globalSearch" type="search" placeholder="Jobs, projects, people, skills" />
+          </label>
+          <div class="top-actions">
+            <button class="icon-button" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle theme">T</button>
+            <button class="icon-button" id="notifyToggle" type="button" title="Notifications" aria-label="Notifications">N</button>
+            <button class="primary-button" data-view-jump="interview" type="button">Schedule Interview</button>
+          </div>
+        </header>
+
+        <section class="notification-tray" id="notificationTray" aria-live="polite">
+          <div class="tray-head">
+            <h2>Real-time Notifications</h2>
+            <button class="ghost-button" id="clearNotifications" type="button">Clear</button>
+          </div>
+          <div id="notificationList"></div>
+        </section>
+
+        <section class="view active" id="workspace">
+          <div class="workspace-hero">
+            <img src="assets/talent-command-center.png" alt="Modern talent marketplace command center" />
+            <div class="hero-copy">
+              <span class="eyebrow">Enterprise hiring + freelancing ecosystem</span>
+              <h1>Hire, interview, staff, and pay talent from one live operating layer.</h1>
+              <p>Jobs, freelance projects, social feed, mock interviews, STAR feedback, escrow milestones, and AI matching in a single responsive workspace.</p>
+              <div class="hero-actions">
+                <button class="primary-button" data-view-jump="jobs" type="button">Explore jobs</button>
+                <button class="secondary-button" data-view-jump="projects" type="button">Browse projects</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-block">
+              <span>Open Jobs</span>
+              <strong id="metricJobs">0</strong>
+              <small>AI ranked by fit</small>
+            </article>
+            <article class="metric-block">
+              <span>Projects</span>
+              <strong id="metricProjects">0</strong>
+              <small>Milestone-ready</small>
+            </article>
+            <article class="metric-block">
+              <span>Interviews</span>
+              <strong>18</strong>
+              <small>Scheduled this week</small>
+            </article>
+            <article class="metric-block">
+              <span>Escrow</span>
+              <strong>$428K</strong>
+              <small>Protected payments</small>
+            </article>
+          </div>
+
+          <div class="workspace-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Best Matches</h2>
+                <button class="ghost-button" data-view-jump="jobs" type="button">View all</button>
+              </div>
+              <div id="bestMatchList" class="compact-list"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Candidate Pipeline</h2>
+                <span class="status-pill">Live scoring</span>
+              </div>
+              <div id="pipelineList" class="pipeline-list"></div>
+            </section>
+
+            <section class="panel wide-panel">
+              <div class="panel-head">
+                <h2>Social Hiring Feed</h2>
+                <button class="ghost-button" data-view-jump="network" type="button">Open feed</button>
+              </div>
+              <div id="feedPreview" class="feed-stack"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="jobs">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Job search module</span>
+              <h1>Search roles, save jobs, and track applications.</h1>
+            </div>
+            <button class="primary-button" data-view-jump="admin" type="button">Post Job</button>
+          </div>
+
+          <div class="tool-row">
+            <label>
+              Keyword
+              <input id="jobKeyword" type="search" placeholder="React, Java, DevOps" />
+            </label>
+            <label>
+              Location
+              <select id="jobLocation">
+                <option value="all">All locations</option>
+                <option value="Remote">Remote</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Pune">Pune</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Mumbai">Mumbai</option>
+              </select>
+            </label>
+            <label>
+              Experience
+              <select id="jobExperience">
+                <option value="all">Any experience</option>
+                <option value="0-2">0-2 years</option>
+                <option value="3-5">3-5 years</option>
+                <option value="6-9">6-9 years</option>
+                <option value="10+">10+ years</option>
+              </select>
+            </label>
+            <label>
+              Salary min
+              <input id="salaryRange" type="range" min="0" max="80" value="0" />
+              <output id="salaryOutput">Any</output>
+            </label>
+            <label class="check-line">
+              <input id="remoteOnly" type="checkbox" />
+              Remote only
+            </label>
+          </div>
+
+          <div class="result-layout">
+            <div id="jobResults" class="result-list"></div>
+            <aside class="insight-panel">
+              <h2>Recommended Skills</h2>
+              <div class="skill-cloud" id="jobSkillCloud"></div>
+              <h2>Application Tracker</h2>
+              <div id="applicationTracker" class="mini-timeline"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="projects">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Freelance marketplace</span>
+              <h1>Browse projects, bid, create teams, and manage milestones.</h1>
+            </div>
+            <button class="primary-button" data-view-jump="admin" type="button">Create Project</button>
+          </div>
+
+          <div class="tool-row">
+            <label>
+              Skill
+              <input id="projectSkill" type="search" placeholder="AI, mobile, cloud" />
+            </label>
+            <label>
+              Budget
+              <select id="projectBudget">
+                <option value="all">Any budget</option>
+                <option value="10000">Above $10K</option>
+                <option value="25000">Above $25K</option>
+                <option value="50000">Above $50K</option>
+              </select>
+            </label>
+            <label>
+              Duration
+              <select id="projectDuration">
+                <option value="all">Any duration</option>
+                <option value="short">Under 4 weeks</option>
+                <option value="medium">1-3 months</option>
+                <option value="long">3+ months</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="project-board" id="projectBoard"></div>
+          <section class="panel payment-panel">
+            <div class="panel-head">
+              <h2>Escrow Payment Flow</h2>
+              <span class="status-pill">Milestone protected</span>
+            </div>
+            <div class="payment-flow">
+              <span>Owner funds</span>
+              <span>Escrow lock</span>
+              <span>Work approved</span>
+              <span>Payment released</span>
+            </div>
+            <div id="invoiceList" class="invoice-list"></div>
+          </section>
+        </section>
+
+        <section class="view" id="network">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Professional feed</span>
+              <h1>Share updates, referrals, hiring signals, and project wins.</h1>
+            </div>
+            <button class="primary-button" id="publishPost" type="button">Publish Update</button>
+          </div>
+
+          <form class="composer" id="postComposer">
+            <textarea id="postText" rows="3" placeholder="Share a hiring update, project opening, referral, or interview insight."></textarea>
+            <div class="composer-actions">
+              <label class="compact-select">
+                Visibility
+                <select id="postType">
+                  <option>Hiring</option>
+                  <option>Project</option>
+                  <option>Referral</option>
+                  <option>Interview</option>
+                </select>
+              </label>
+              <button class="secondary-button" type="submit">Add to feed</button>
+            </div>
+          </form>
+          <div id="feedList" class="feed-stack full-feed"></div>
+        </section>
+
+        <section class="view" id="interview">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Real-time mock interview</span>
+              <h1>20-minute session, recording, chat, ratings, and STAR feedback.</h1>
+            </div>
+            <button class="primary-button" id="startInterview" type="button">Start 20 Min</button>
+          </div>
+
+          <div class="interview-grid">
+            <section class="video-stage">
+              <div class="video-main">
+                <span class="camera-label">Candidate Camera</span>
+                <div class="avatar-large">AK</div>
+                <strong>Ananya Kulkarni</strong>
+                <small>Senior Full Stack Engineer</small>
+              </div>
+              <div class="video-side">
+                <div>
+                  <span class="camera-label">Interviewer</span>
+                  <div class="avatar-small">RM</div>
+                </div>
+                <div>
+                  <span class="camera-label">Screen Share</span>
+                  <div class="screen-share">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="call-controls">
+                <button class="icon-button active-control" type="button" title="Camera" aria-label="Camera">C</button>
+                <button class="icon-button active-control" type="button" title="Microphone" aria-label="Microphone">M</button>
+                <button class="icon-button" type="button" title="Screen share" aria-label="Screen share">S</button>
+                <button class="danger-button" id="endInterview" type="button">End</button>
+              </div>
+            </section>
+
+            <aside class="interview-side">
+              <div class="timer-block">
+                <span>Session Timer</span>
+                <strong id="interviewTimer">20:00</strong>
+                <small id="recordingState">Recording ready</small>
+              </div>
+              <div class="chat-box" id="chatBox"></div>
+              <form class="chat-form" id="chatForm">
+                <input id="chatInput" type="text" placeholder="Interview chat message" />
+                <button class="secondary-button" type="submit">Send</button>
+              </form>
+            </aside>
+          </div>
+
+          <section class="rating-panel">
+            <div class="panel-head">
+              <h2>STAR Feedback</h2>
+              <span class="status-pill">Auto score <strong id="starScore">4.3</strong></span>
+            </div>
+            <div class="star-grid">
+              <label>Situation<textarea id="situationText">Handled a production outage during a release window.</textarea></label>
+              <label>Task<textarea id="taskText">Restore service availability and protect customer transactions.</textarea></label>
+              <label>Action<textarea id="actionText">Scaled pods, isolated a database lock, and coordinated rollback notes.</textarea></label>
+              <label>Result<textarea id="resultText">Recovered within 20 minutes with clear post-incident ownership.</textarea></label>
+            </div>
+            <div class="score-grid">
+              <label>Communication <input class="score-input" type="range" min="1" max="5" step="0.5" value="4.5" /></label>
+              <label>Technical Skills <input class="score-input" type="range" min="1" max="5" step="0.5" value="4" /></label>
+              <label>Problem Solving <input class="score-input" type="range" min="1" max="5" step="0.5" value="4.5" /></label>
+              <label>Confidence <input class="score-input" type="range" min="1" max="5" step="0.5" value="4" /></label>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="profile">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Candidate profile</span>
+              <h1>Resume, cover letter, photos, certificates, portfolio, and self-interview video.</h1>
+            </div>
+            <button class="primary-button" id="saveProfile" type="button">Save Profile</button>
+          </div>
+
+          <div class="profile-grid">
+            <section class="profile-card">
+              <div class="profile-photo">NS</div>
+              <h2>Nisha Sharma</h2>
+              <p>Cloud-native product engineer with React, Spring Boot, Kubernetes, and payment platform experience.</p>
+              <div class="skill-cloud">
+                <span>React</span><span>Spring Boot</span><span>PostgreSQL</span><span>Kafka</span><span>AWS</span>
+              </div>
+            </section>
+            <section class="upload-panel">
+              <h2>Documents</h2>
+              <div class="upload-grid">
+                <label>Resume PDF<input type="file" data-upload="Resume" accept=".pdf" /></label>
+                <label>Cover Letter<input type="file" data-upload="Cover letter" accept=".pdf,.doc,.docx" /></label>
+                <label>Photo<input type="file" data-upload="Photo" accept="image/*" /></label>
+                <label>Certificates<input type="file" data-upload="Certificates" multiple /></label>
+                <label>Portfolio<input type="file" data-upload="Portfolio" /></label>
+                <label>Self Interview Video<input type="file" data-upload="Self interview video" accept="video/*" /></label>
+              </div>
+              <div id="uploadStatus" class="upload-status"></div>
+            </section>
+            <section class="self-video">
+              <div class="panel-head">
+                <h2>Self Interview</h2>
+                <span class="status-pill">2-5 min</span>
+              </div>
+              <div class="video-card">
+                <div class="avatar-large">NS</div>
+                <div>
+                  <strong>Self intro recording</strong>
+                  <small>AI speech analysis: clarity 87%, filler words low, confidence strong.</small>
+                </div>
+              </div>
+              <button class="secondary-button" id="recordSelfIntro" type="button">Record Self Intro</button>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="admin">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">HR + team studio</span>
+              <h1>Create jobs, shortlist candidates, post projects, assign tasks, and invite freelancers.</h1>
+            </div>
+          </div>
+
+          <div class="admin-grid">
+            <form class="studio-form" id="jobForm">
+              <h2>Create Job</h2>
+              <input name="title" placeholder="Job title" required />
+              <input name="skills" placeholder="Required skills" required />
+              <select name="location">
+                <option>Remote</option>
+                <option>Bengaluru</option>
+                <option>Pune</option>
+                <option>Hyderabad</option>
+              </select>
+              <input name="salary" type="number" placeholder="Salary LPA" required />
+              <textarea name="description" placeholder="Job description"></textarea>
+              <button class="primary-button" type="submit">Add Job</button>
+            </form>
+
+            <form class="studio-form" id="projectForm">
+              <h2>Create Project</h2>
+              <input name="title" placeholder="Project title" required />
+              <input name="skills" placeholder="Skills needed" required />
+              <input name="budget" type="number" placeholder="Budget USD" required />
+              <input name="deadline" type="date" required />
+              <textarea name="milestones" placeholder="Milestones"></textarea>
+              <button class="primary-button" type="submit">Add Project</button>
+            </form>
+
+            <section class="shortlist-panel">
+              <div class="panel-head">
+                <h2>AI Candidate Matching</h2>
+                <span class="status-pill">RBAC secured</span>
+              </div>
+              <div id="candidateList" class="candidate-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="architecture">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Heavy-scale architecture</span>
+              <h1>Microservices, WebSocket events, search, recommendations, payments, and cloud storage.</h1>
+            </div>
+          </div>
+
+          <div class="architecture-grid">
+            <section class="arch-lane">
+              <h2>Frontend</h2>
+              <p>React or Next.js with TypeScript, role-aware routing, live data queries, SSR for public jobs, and CDN cached assets.</p>
+            </section>
+            <section class="arch-lane">
+              <h2>API Gateway</h2>
+              <p>JWT auth, MFA, RBAC policy checks, rate limits, audit logs, and request routing into domain services.</p>
+            </section>
+            <section class="arch-lane">
+              <h2>Services</h2>
+              <p>User, Job, Project, Interview, Video, Notification, Payment, Search, and Recommendation services.</p>
+            </section>
+            <section class="arch-lane">
+              <h2>Real Time</h2>
+              <p>Socket.io or WebSocket gateway, Redis Pub/Sub for fanout, Kafka for durable interview, feed, and payment events.</p>
+            </section>
+            <section class="arch-lane">
+              <h2>Data</h2>
+              <p>PostgreSQL for core transactions, MongoDB for feed and notes, Redis cache, object storage on S3 or Azure Blob.</p>
+            </section>
+            <section class="arch-lane">
+              <h2>Cloud Scale</h2>
+              <p>Docker, Kubernetes, Helm, Terraform, autoscaling, multi-region read replicas, observability, and CI/CD pipelines.</p>
+            </section>
+          </div>
+
+          <div class="scale-flow">
+            <span>Load Balancer</span>
+            <span>API Gateway</span>
+            <span>Kubernetes</span>
+            <span>Microservices</span>
+            <span>Redis Cache</span>
+            <span>PostgreSQL + MongoDB</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

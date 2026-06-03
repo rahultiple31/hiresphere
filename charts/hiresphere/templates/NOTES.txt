@@ -1,0 +1,21 @@
+HireSphere has been deployed.
+
+Release:
+  {{ .Release.Name }}
+
+Namespace:
+  {{ .Release.Namespace }}
+
+Service:
+  {{ include "hiresphere.fullname" . }}:{{ .Values.service.port }}
+
+{{- if .Values.ingress.enabled }}
+Ingress:
+{{- range .Values.ingress.hosts }}
+  http://{{ .host }}{{ (index .paths 0).path }}
+{{- end }}
+{{- else }}
+Port forward:
+  kubectl port-forward svc/{{ include "hiresphere.fullname" . }} 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
+  open http://localhost:8080
+{{- end }}
