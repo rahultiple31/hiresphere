@@ -23,6 +23,7 @@ env:
   APP_DIR: .
   CHART_PATH: charts/hiresphere
   IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/hiresphere
+  DOCKERHUB_REPOSITORY: rahultipledocker/hiresphere
   RELEASE_NAME: ${{ vars.HELM_RELEASE_NAME || 'hiresphere' }}
   KUBE_NAMESPACE: ${{ vars.KUBE_NAMESPACE || 'hiresphere' }}
 
@@ -81,8 +82,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker metadata
-        id: meta
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker metadata for GHCR
+        id: meta_ghcr
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_REPOSITORY }}
@@ -91,6 +98,17 @@ jobs:
             type=ref,event=branch
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Docker metadata for Docker Hub
+        id: meta_dockerhub
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKERHUB_REPOSITORY }}
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=1.0
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v6
@@ -98,7 +116,9 @@ jobs:
           context: ${{ env.APP_DIR }}
           file: Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ steps.meta_ghcr.outputs.tags }}
+            ${{ steps.meta_dockerhub.outputs.tags }}
+          labels: ${{ steps.meta_ghcr.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
