@@ -17,17 +17,13 @@ docker run --rm -p 8080:8080 hiresphere:local
 
 Open `http://localhost:8080`.
 
-## Helm Deploy
+## ArgoCD Deploy
 
-Deploy to Kubernetes:
+Use ArgoCD to deploy the Helm chart from this repository:
 
-```bash
-helm upgrade --install hiresphere ./charts/hiresphere \
-  --namespace hiresphere \
-  --create-namespace \
-  --set image.repository=ghcr.io/YOUR_ORG/hiresphere \
-  --set image.tag=latest
-```
+- Chart path: `charts/hiresphere`
+- Image repository: `ghcr.io/<owner>/hiresphere`
+- Image tag: use `latest`, branch tags, or `sha-<short-sha>` from the GitHub Actions image build
 
 For local access without ingress:
 
@@ -45,21 +41,12 @@ It performs:
 - Helm lint and template smoke test
 - Docker image build
 - Push to GitHub Container Registry as `ghcr.io/<owner>/hiresphere`
-- Kubernetes deployment with `helm upgrade --install`
-
-Required secret for deployment:
-
-- `KUBECONFIG_B64`: base64-encoded kubeconfig for the target cluster
-
-Optional secret for private GitHub Container Registry images:
-
-- `GHCR_PULL_TOKEN`: GitHub token with package read access. When present, the workflow creates a `ghcr-pull-secret` image pull secret in Kubernetes.
+- No Kubernetes deployment stage. ArgoCD should deploy this Helm chart.
 
 Optional repository variables:
 
 - `KUBE_NAMESPACE`: defaults to `hiresphere`
 - `HELM_RELEASE_NAME`: defaults to `hiresphere`
-- `GHCR_PULL_USERNAME`: defaults to the workflow actor
 
 ## Included Modules
 
