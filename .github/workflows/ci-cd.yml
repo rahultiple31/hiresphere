@@ -1,113 +1,229 @@
 name: HireSphere CI/CD
 
 on:
-  push:
-    branches: [main, master]
 
-  pull_request:
-    branches: [main, master]
+push:
 
-  workflow_dispatch:
+```
+branches:
+
+  - main
+  - master
+```
+
+pull_request:
+
+```
+branches:
+
+  - main
+  - master
+```
+
+workflow_dispatch:
 
 permissions:
-  contents: read
-  packages: write
-  id-token: write
+
+contents: read
+
+packages: write
+
+id-token: write
 
 env:
-  APP_DIR: .
-  CHART_PATH: charts/hiresphere
-  IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/hiresphere
-  DOCKERHUB_REPOSITORY: rahultipledocker/hiresphere
-  RELEASE_NAME: hiresphere
-  KUBE_NAMESPACE: hiresphere
+
+APP_DIR: .
+
+CHART_PATH: charts/hiresphere
+
+IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/hiresphere
+
+DOCKERHUB_REPOSITORY: rahultipledocker/hiresphere
+
+RELEASE_NAME: ${{ vars.HELM_RELEASE_NAME || 'hiresphere' }}
+
+KUBE_NAMESPACE: ${{ vars.KUBE_NAMESPACE || 'hiresphere' }}
 
 jobs:
 
-  validate:
+validate:
 
-    runs-on: ubuntu-latest
+```
+name: Validate Static App
 
-    steps:
+runs-on: ubuntu-latest
 
-    - uses: actions/checkout@v4
+steps:
 
-    - run: |
+  - name: Checkout Repository
 
-        test -f index.html
-        test -f styles.css
-        test -f app.js
-        test -f Dockerfile
-        test -f nginx.conf
+    uses: actions/checkout@v4
 
-    - uses: azure/setup-helm@v4
+  - name: Validate Required Files
 
-    - run: helm lint $CHART_PATH
+    run: |
 
-  image:
+      test -f "$APP_DIR/index.html"
+      test -f "$APP_DIR/styles.css"
+      test -f "$APP_DIR/app.js"
+      test -f "$APP_DIR/Dockerfile"
+      test -f "$APP_DIR/nginx.conf"
 
-    needs: validate
+      test -f "$CHART_PATH/Chart.yaml"
+      test -f "$CHART_PATH/values.yaml"
 
-    runs-on: ubuntu-latest
+  - name: Setup Helm
 
-    steps:
+    uses: azure/setup-helm@v4
 
-    - uses: actions/checkout@v4
+    with:
 
-    - uses: docker/setup-buildx-action@v3
+      version: v3.15.4
 
-    - uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+  - name: Helm Lint
 
-    - uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    run: |
 
-    - id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: |
-          ${{ env.IMAGE_REPOSITORY }}
-          ${{ env.DOCKERHUB_REPOSITORY }}
+      helm lint "$CHART_PATH"
 
-        tags: |
-          type=sha,prefix=sha-
-          type=raw,value=latest
-          type=raw,value=1.0
+  - name: Helm Template Validation
 
-    - uses: docker/build-push-action@v6
+    run: |
 
-      with:
+      helm template "$RELEASE_NAME" "$CHART_PATH" \
+        --namespace "$KUBE_NAMESPACE" \
+        --set fullnameOverride="$RELEASE_NAME" \
+        --set image.repository="$IMAGE_REPOSITORY" \
+        --set image.tag="ci-${GITHUB_SHA::7}"
+```
 
-        context: .
+image:
 
-        file: ./Dockerfile
+```
+name: Build Push Test Image
 
-        platforms: linux/amd64,linux/arm64
+runs-on: ubuntu-latest
 
-        push: ${{ github.event_name != 'pull_request' }}
+needs: validate
 
-        tags: ${{ steps.meta.outputs.tags }}
+outputs:
 
-        labels: ${{ steps.meta.outputs.labels }}
+  image_digest: ${{ steps.build.outputs.digest }}
 
-        cache-from: type=gha
+steps:
 
-        cache-to: type=gha,mode=max
+  - name: Checkout Repository
 
-    - name: Test image
+    uses: actions/checkout@v4
 
-      run: |
+  - name: Setup Docker Buildx
 
-        docker run -d \
-        --name app \
+    uses: docker/setup-buildx-action@v3
+
+  - name: Login GHCR
+
+    if: github.event_name != 'pull_request'
+
+    uses: docker/login-action@v3
+
+    with:
+
+      registry: ghcr.io
+
+      username: ${{ github.actor }}
+
+      password: ${{ secrets.GITHUB_TOKEN }}
+
+  - name: Login DockerHub
+
+    if: github.event_name != 'pull_request'
+
+    uses: docker/login-action@v3
+
+    with:
+
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  - name: Docker Metadata
+
+    id: meta
+
+    uses: docker/metadata-action@v5
+
+    with:
+
+      images: |
+
+        ${{ env.IMAGE_REPOSITORY }}
+        ${{ env.DOCKERHUB_REPOSITORY }}
+
+      tags: |
+
+        type=sha,prefix=sha-
+        type=ref,event=branch
+        type=raw,value=latest,enable={{is_default_branch}}
+        type=raw,value=1.0
+
+  - name: Build and Push Image
+
+    id: build
+
+    uses: docker/build-push-action@v6
+
+    with:
+
+      context: ${{ env.APP_DIR }}
+
+      file: ${{ env.APP_DIR }}/Dockerfile
+
+      platforms: linux/amd64
+
+      push: ${{ github.event_name != 'pull_request' }}
+
+      load: true
+
+      tags: |
+
+        ${{ env.DOCKERHUB_REPOSITORY }}:1.0
+
+      labels: ${{ steps.meta.outputs.labels }}
+
+      cache-from: type=gha
+
+      cache-to: type=gha,mode=max
+
+  - name: Test Container Startup
+
+    run: |
+
+      docker run -d \
+        --name hiresphere-test \
         -p 8080:8080 \
-        rahultipledocker/hiresphere:1.0
+        ${{ env.DOCKERHUB_REPOSITORY }}:1.0
 
-        sleep 10
+      sleep 20
 
-        curl localhost:8080/healthz
+      echo "===== Container Status ====="
+
+      docker ps -a
+
+      echo "===== Container Logs ====="
+
+      docker logs hiresphere-test
+
+      curl \
+        --retry 10 \
+        --retry-delay 2 \
+        --retry-connrefused \
+        http://localhost:8080/healthz
+
+  - name: Cleanup
+
+    if: always()
+
+    run: |
+
+      docker rm -f hiresphere-test || true
+```
