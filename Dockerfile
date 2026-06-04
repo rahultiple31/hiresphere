@@ -9,9 +9,21 @@ COPY styles.css /usr/share/nginx/html/styles.css
 COPY app.js /usr/share/nginx/html/app.js
 COPY assets /usr/share/nginx/html/assets
 
-RUN chown -R nginx:nginx /usr/share/nginx/html \
+RUN mkdir -p /var/cache/nginx/client_temp \
+    /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp \
+    /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp \
+    /var/run \
+  && chown -R nginx:nginx /usr/share/nginx/html \
+    /var/cache/nginx \
+    /var/run \
+    /var/log/nginx \
+    /etc/nginx/conf.d \
   && chmod -R 755 /usr/share/nginx/html
+
+USER nginx
 
 EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "pid /tmp/nginx.pid; daemon off;"]
