@@ -15,7 +15,13 @@ Ingress:
   http://{{ .host }}{{ (index .paths 0).path }}
 {{- end }}
 {{- else }}
+{{- if eq .Values.service.type "NodePort" }}
+NodePort:
+  kubectl get svc {{ include "hiresphere.fullname" . }} -n {{ .Release.Namespace }}
+  http://<node-ip>:<node-port>
+{{- else }}
 Port forward:
   kubectl port-forward svc/{{ include "hiresphere.fullname" . }} 8080:{{ .Values.service.port }} -n {{ .Release.Namespace }}
   open http://localhost:8080
+{{- end }}
 {{- end }}

@@ -22,14 +22,16 @@ Open `http://localhost:8080`.
 Use ArgoCD to deploy the Helm chart from this repository:
 
 - Chart path: `charts/hiresphere`
-- Image repository: `ghcr.io/<owner>/hiresphere`
-- Image tag: use `latest`, branch tags, or `sha-<short-sha>` from the GitHub Actions image build
+- Image repository: `rahultipledocker/hiresphere`
+- Image tag: `1.0` by default; the workflow also publishes `latest`, branch tags, and `sha-<short-sha>` tags
 
-For local access without ingress:
+The chart deploys a `NodePort` service by default. To see the assigned port:
 
 ```bash
-kubectl port-forward svc/hiresphere 8080:80 -n hiresphere
+kubectl get svc hiresphere -n hiresphere
 ```
+
+If you prefer a fixed port, set `service.nodePort` to a valid port in the `30000-32767` range, for example `30080`.
 
 ## GitHub Actions CI/CD
 
@@ -39,8 +41,9 @@ It performs:
 
 - Static app file validation
 - Helm lint and template smoke test
-- Docker image build
+- Docker image build and container health smoke test
 - Push to GitHub Container Registry as `ghcr.io/<owner>/hiresphere`
+- Push to Docker Hub as `rahultipledocker/hiresphere`
 - No Kubernetes deployment stage. ArgoCD should deploy this Helm chart.
 
 Optional repository variables:
