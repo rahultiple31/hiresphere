@@ -32,7 +32,7 @@ securityContext:
   runAsGroup: 101
 
 service:
-  type: ClusterIP
+  type: NotePort
   port: 80
   targetPort: 8080
 
