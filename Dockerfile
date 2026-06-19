@@ -1,15 +1,15 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build
+
 FROM nginxinc/nginx-unprivileged:1.27-alpine
-
-LABEL org.opencontainers.image.title="HireSphere Gateway"
-LABEL org.opencontainers.image.description="Shell and reverse proxy for HireSphere micro-frontends"
-
+LABEL org.opencontainers.image.title="HireSphere React Gateway"
 USER root
 COPY --chown=101:101 gateway/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --chown=101:101 gateway/index.html /usr/share/nginx/html/index.html
-COPY --chown=101:101 gateway/app.js /usr/share/nginx/html/shell.js
-COPY --chown=101:101 gateway/styles.css /usr/share/nginx/html/shell.css
-COPY --chown=101:101 services/shared /usr/share/nginx/html/shared
-COPY --chown=101:101 assets /usr/share/nginx/html/assets
+COPY --from=build --chown=101:101 /app/.build/gateway/ /usr/share/nginx/html/
 RUN chmod -R 755 /usr/share/nginx/html
 USER 101:101
 EXPOSE 8080

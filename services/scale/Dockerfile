@@ -1,13 +1,13 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build:component -- --mode scale
 FROM nginxinc/nginx-unprivileged:1.27-alpine
-
-LABEL org.opencontainers.image.title="HireSphere Scale Service"
-LABEL org.opencontainers.image.description="Scale micro-frontend for HireSphere"
-
 USER root
 COPY --chown=101:101 services/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --chown=101:101 services/scale/index.html /usr/share/nginx/html/index.html
-COPY --chown=101:101 services/scale/app.js /usr/share/nginx/html/app.js
-COPY --chown=101:101 services/scale/styles.css /usr/share/nginx/html/styles.css
+COPY --from=build --chown=101:101 /app/.build/scale/ /usr/share/nginx/html/
 RUN chmod -R 755 /usr/share/nginx/html
 USER 101:101
 EXPOSE 8080

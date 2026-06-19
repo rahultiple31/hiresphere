@@ -8,3 +8,6 @@ README.md
 node_modules
 .DS_Store
 Thumbs.db
+.build
+dist
+.tmp-ui-dist

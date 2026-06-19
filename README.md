@@ -1,94 +1,66 @@
-# HireSphere micro-frontends
+# HireSphere React micro-frontends
 
-HireSphere is split into a persistent navigation shell and eight independently editable static services.
+HireSphere is a React 19 talent marketplace composed of a persistent gateway shell and eight independently deployable micro-frontends.
 
-## Service map
+| Micro-frontend | Source route | Container image |
+| --- | --- | --- |
+| Workspace | `/workspace/` | `hiresphere-workspace` |
+| Jobs | `/jobs/` | `hiresphere-jobs` |
+| Projects | `/projects/` | `hiresphere-projects` |
+| Network | `/network/` | `hiresphere-network` |
+| Interview | `/interview/` | `hiresphere-interview` |
+| Profile | `/profile/` | `hiresphere-profile` |
+| HR Studio | `/hr-studio/` | `hiresphere-hr-studio` |
+| Scale | `/scale/` | `hiresphere-scale` |
 
-| Sidebar item | Source folder | Gateway route | Container image |
-| --- | --- | --- | --- |
-| Workspace | `services/workspace` | `/workspace/` | `hiresphere-workspace` |
-| Jobs | `services/jobs` | `/jobs/` | `hiresphere-jobs` |
-| Projects | `services/projects` | `/projects/` | `hiresphere-projects` |
-| Network | `services/network` | `/network/` | `hiresphere-network` |
-| Interview | `services/interview` | `/interview/` | `hiresphere-interview` |
-| Profile | `services/profile` | `/profile/` | `hiresphere-profile` |
-| HR Studio | `services/hr-studio` | `/hr-studio/` | `hiresphere-hr-studio` |
-| Scale | `services/scale` | `/scale/` | `hiresphere-scale` |
+## React architecture
 
-The navigation UI lives in `gateway/`. Shared design tokens and safe DOM helpers live in `services/shared/`.
+- `src/gateway-main.jsx` owns navigation, theme, global search, roles, and notifications.
+- `src/service-main.jsx` contains the service views and React state-driven interactions.
+- `src/bridge.js` provides a small same-origin message bridge between the shell and micro-frontends.
+- `vite.config.js` builds every component as an isolated static artifact.
+- `services/shared/` contains shared design tokens and responsive layout styles.
 
-## Edit one service
+The services keep independent Docker images and Kubernetes Deployments. React is compiled during the image build; production containers serve only optimized static assets through unprivileged Nginx.
 
-Each service owns four small files:
+## Local development
 
-- `index.html` — page structure
-- `styles.css` — service-specific appearance
-- `app.js` — service-specific behavior and data
-- `Dockerfile` — independent container image definition
+Requires Node.js 22+.
 
-Editing one folder does not require changing the other seven. Shared styling changes belong in `services/shared/base.css`; shell/sidebar changes belong in `gateway/`.
+```bash
+npm ci
+npm run dev
+```
 
-## Run the complete platform
-
-Docker Compose starts the gateway and all eight services:
+For the complete production-style platform:
 
 ```bash
 docker compose up --build
 ```
 
-Open `http://localhost:8080`. Stop everything with:
+Open `http://localhost:8080`.
+
+## Production builds
+
+Build only the gateway:
 
 ```bash
-docker compose down
+npm run build
 ```
 
-Only the gateway publishes a host port. Internal services communicate on the private `hiresphere` Docker network.
-
-## Kubernetes / ArgoCD
-
-The Helm chart in `charts/hiresphere` deploys nine Deployments: one gateway and eight services. The gateway Service retains the public `NodePort`; internal services use `ClusterIP`.
-
-CI publishes nine separate repositories: `hiresphere-gateway` plus one `hiresphere-<service>` repository for every microservice. Each receives `1.0`, `latest`, and immutable `sha-*` tags.
-
-### Manual CI/CD selector
-
-Open **Actions → HireSphere CI/CD → Run workflow** and choose a component:
-
-- `all` builds and integration-tests the complete platform, then publishes the gateway and all eight services.
-- `gateway` integration-tests the complete platform, then publishes only the gateway image.
-- Selecting one service, such as `jobs`, smoke-tests and publishes only that service image.
-
-Pushes to `main` or `master` use the `all` flow automatically. Pull requests validate the Helm chart and integration-test the complete platform without publishing images.
-
-## GitHub Pages
-
-The `Deploy HireSphere to GitHub Pages` workflow assembles the gateway, shared assets, and all eight services into one static Pages artifact. In repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
-
-After pushing to `main` or `master`, the site is available at `https://<username>.github.io/<repository>/`. The same source remains compatible with the Docker gateway because all browser-facing paths are relative.
-
-## Build one service
+Build all nine React applications and assemble the GitHub Pages artifact:
 
 ```bash
-docker build -f services/jobs/Dockerfile -t hiresphere-jobs .
+npm run build:pages
 ```
 
-Replace `jobs` in the Dockerfile path and image name with any source folder from the table. A service container is intentionally consumed through the gateway because shared assets and same-origin messaging are provided there.
+The assembled static site is written to `dist/`. Individual component artifacts are written to `.build/<component>/`.
 
-## Architecture
+## Deployment
 
-```text
-Browser
-  -> gateway shell :8080
-       -> /workspace/  -> workspace-service:8080
-       -> /jobs/       -> jobs-service:8080
-       -> /projects/   -> projects-service:8080
-       -> /network/    -> network-service:8080
-       -> /interview/  -> interview-service:8080
-       -> /profile/    -> profile-service:8080
-       -> /hr-studio/  -> hr-studio-service:8080
-       -> /scale/      -> scale-service:8080
-```
+- Docker Compose builds and runs one gateway plus eight micro-frontends.
+- The Helm chart deploys the same nine images to Kubernetes.
+- `.github/workflows/ci-cd.yml` compiles React, validates Helm, smoke-tests all routes, and publishes selected images.
+- `.github/workflows/static.yml` builds `dist/` and deploys it to GitHub Pages.
 
-## Security notes
-
-User-created content is rendered with DOM text nodes rather than interpolated `innerHTML`. Both gateway and service servers add clickjacking, MIME-sniffing, referrer, and Content Security Policy headers.
+Only the gateway publishes a host port. Internal containers communicate through the private `hiresphere` network.

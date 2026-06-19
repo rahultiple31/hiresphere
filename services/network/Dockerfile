@@ -1,13 +1,13 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+RUN npm run build:component -- --mode network
 FROM nginxinc/nginx-unprivileged:1.27-alpine
-
-LABEL org.opencontainers.image.title="HireSphere Network Service"
-LABEL org.opencontainers.image.description="Network micro-frontend for HireSphere"
-
 USER root
 COPY --chown=101:101 services/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --chown=101:101 services/network/index.html /usr/share/nginx/html/index.html
-COPY --chown=101:101 services/network/app.js /usr/share/nginx/html/app.js
-COPY --chown=101:101 services/network/styles.css /usr/share/nginx/html/styles.css
+COPY --from=build --chown=101:101 /app/.build/network/ /usr/share/nginx/html/
 RUN chmod -R 755 /usr/share/nginx/html
 USER 101:101
 EXPOSE 8080

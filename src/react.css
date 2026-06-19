@@ -1,0 +1,33 @@
+.react-shell { min-height: 100vh; }
+.sidebar-status { margin-top: 14px; color: var(--muted); font-size: .76rem; display: flex; align-items: center; gap: 8px; }
+.live-dot, .service-health i { width: 8px; height: 8px; border-radius: 50%; background: #38c793; box-shadow: 0 0 0 4px rgb(56 199 147 / 12%); }
+.notification-button { position: relative; }
+.notification-button b { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; min-width: 18px; height: 18px; border-radius: 20px; padding: 0 4px; background: var(--coral); color: white; font-size: .65rem; }
+.service-heading { display: flex; align-items: center; justify-content: space-between; padding: 18px 4px 8px; }
+.service-heading > div { display: grid; gap: 2px; }
+.service-heading strong { font-size: 1.35rem; }
+.service-health { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .78rem; }
+.route-loader { height: 3px; overflow: hidden; background: var(--surface-2); border-radius: 4px; }
+.route-loader span { display: block; width: 35%; height: 100%; background: var(--teal); animation: route-progress .8s ease-in-out infinite alternate; }
+@keyframes route-progress { to { transform: translateX(190%); } }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid color-mix(in srgb, var(--teal), transparent 55%); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; } }
+.empty-state { padding: 40px; text-align: center; border: 1px dashed var(--line); border-radius: var(--radius); background: var(--surface); }
+.empty-state strong { font-size: 1.2rem; }
+.empty-state p { color: var(--muted); }
+.arch-number { color: var(--teal); font-size: .75rem; font-weight: 800; letter-spacing: .12em; }
+.primary-button:disabled { opacity: .7; cursor: default; }
+@media (max-width: 760px) {
+  .main, #serviceFrame { width: 100%; max-width: 100%; overflow-x: hidden; }
+  .sidebar { gap: 10px; }
+  .nav-groups { display: flex; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
+  .nav-groups::-webkit-scrollbar { display: none; }
+  .nav-item { flex: 0 0 auto; min-height: 36px; padding: 7px 11px; }
+  .role-switcher { margin-top: 0; }
+  .segmented { display: flex; overflow-x: auto; }
+  .role-tab { flex: 1 0 auto; min-height: 34px; }
+  .sidebar-status { margin-top: 4px; }
+  .top-actions .primary-button { min-width: 0; padding-inline: 10px; }
+  .hero-copy h1 { max-width: 100%; font-size: 1.48rem; overflow-wrap: anywhere; }
+}

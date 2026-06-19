@@ -54,26 +54,32 @@ jobs:
 
       - name: Check required files
         run: |
-          test -f "$APP_DIR/gateway/index.html"
+          test -f "$APP_DIR/index.html"
           test -f "$APP_DIR/gateway/styles.css"
-          test -f "$APP_DIR/gateway/app.js"
+          test -f "$APP_DIR/src/gateway-main.jsx"
+          test -f "$APP_DIR/src/service-main.jsx"
+          test -f "$APP_DIR/package.json"
+          test -f "$APP_DIR/vite.config.js"
           test -f "$APP_DIR/Dockerfile"
           test -f "$APP_DIR/docker-compose.yml"
           for service in workspace jobs projects network interview profile hr-studio scale; do
             test -f "$APP_DIR/services/$service/index.html"
             test -f "$APP_DIR/services/$service/styles.css"
-            test -f "$APP_DIR/services/$service/app.js"
             test -f "$APP_DIR/services/$service/Dockerfile"
           done
           test -f "$CHART_PATH/Chart.yaml"
           test -f "$CHART_PATH/values.yaml"
 
-      - name: Validate JavaScript syntax
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and compile React applications
         run: |
-          node --check "$APP_DIR/gateway/app.js"
-          for script in "$APP_DIR"/services/shared/*.js "$APP_DIR"/services/*/app.js; do
-            node --input-type=module --check < "$script"
-          done
+          npm ci --no-audit --no-fund
+          npm run build:pages
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
