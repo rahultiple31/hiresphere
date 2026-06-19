@@ -1,10 +1,36 @@
 replicaCount: 2
 
 image:
-  repository: rahultipledocker/hiresphere
+  repository: rahultipledocker/hiresphere-gateway
   pullPolicy: Always
   tag: "1.0"
   digest: ""
+
+microservices:
+  - name: workspace
+    repository: rahultipledocker/hiresphere-workspace
+    tag: "1.0"
+  - name: jobs
+    repository: rahultipledocker/hiresphere-jobs
+    tag: "1.0"
+  - name: projects
+    repository: rahultipledocker/hiresphere-projects
+    tag: "1.0"
+  - name: network
+    repository: rahultipledocker/hiresphere-network
+    tag: "1.0"
+  - name: interview
+    repository: rahultipledocker/hiresphere-interview
+    tag: "1.0"
+  - name: profile
+    repository: rahultipledocker/hiresphere-profile
+    tag: "1.0"
+  - name: hr-studio
+    repository: rahultipledocker/hiresphere-hr-studio
+    tag: "1.0"
+  - name: scale
+    repository: rahultipledocker/hiresphere-scale
+    tag: "1.0"
 
 imagePullSecrets: []
 nameOverride: ""

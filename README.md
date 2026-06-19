@@ -1,68 +1,88 @@
-# HireSphere
+# HireSphere micro-frontends
 
-HireSphere is a static, browser-ready product prototype for a heavy-scale hiring, freelancing, mock-interview, and professional networking ecosystem.
+HireSphere is split into a persistent navigation shell and eight independently editable static services.
 
-## Run
+## Service map
 
-Open `index.html` in a browser. No Node.js, npm, backend, or dev server is required.
+| Sidebar item | Source folder | Gateway route | Container image |
+| --- | --- | --- | --- |
+| Workspace | `services/workspace` | `/workspace/` | `hiresphere-workspace` |
+| Jobs | `services/jobs` | `/jobs/` | `hiresphere-jobs` |
+| Projects | `services/projects` | `/projects/` | `hiresphere-projects` |
+| Network | `services/network` | `/network/` | `hiresphere-network` |
+| Interview | `services/interview` | `/interview/` | `hiresphere-interview` |
+| Profile | `services/profile` | `/profile/` | `hiresphere-profile` |
+| HR Studio | `services/hr-studio` | `/hr-studio/` | `hiresphere-hr-studio` |
+| Scale | `services/scale` | `/scale/` | `hiresphere-scale` |
 
-## Docker
+The navigation UI lives in `gateway/`. Shared design tokens and safe DOM helpers live in `services/shared/`.
 
-Build and run locally:
+## Edit one service
+
+Each service owns four small files:
+
+- `index.html` — page structure
+- `styles.css` — service-specific appearance
+- `app.js` — service-specific behavior and data
+- `Dockerfile` — independent container image definition
+
+Editing one folder does not require changing the other seven. Shared styling changes belong in `services/shared/base.css`; shell/sidebar changes belong in `gateway/`.
+
+## Run the complete platform
+
+Docker Compose starts the gateway and all eight services:
 
 ```bash
-docker build -t hiresphere:local .
-docker run --rm -p 8080:8080 hiresphere:local
+docker compose up --build
 ```
 
-Open `http://localhost:8080`.
-
-## ArgoCD Deploy
-
-Use ArgoCD to deploy the Helm chart from this repository:
-
-- Chart path: `charts/hiresphere`
-- Image repository: `rahultipledocker/hiresphere`
-- Image tag: `1.0` by default; the workflow also publishes `latest`, branch tags, and `sha-<short-sha>` tags
-
-The chart deploys a `NodePort` service by default. To see the assigned port:
+Open `http://localhost:8080`. Stop everything with:
 
 ```bash
-kubectl get svc hiresphere -n hiresphere
+docker compose down
 ```
 
-If you prefer a fixed port, set `service.nodePort` to a valid port in the `30000-32767` range, for example `30080`.
+Only the gateway publishes a host port. Internal services communicate on the private `hiresphere` Docker network.
 
-## GitHub Actions CI/CD
+## Kubernetes / ArgoCD
 
-The workflow lives at `.github/workflows/ci-cd.yml` and runs on pushes to `main` or `master`, pull requests, and manual dispatch.
+The Helm chart in `charts/hiresphere` deploys nine Deployments: one gateway and eight services. The gateway Service retains the public `NodePort`; internal services use `ClusterIP`.
 
-It performs:
+CI publishes nine separate repositories: `hiresphere-gateway` plus one `hiresphere-<service>` repository for every microservice. Each receives `1.0`, `latest`, and immutable `sha-*` tags.
 
-- Static app file validation
-- Helm lint and template smoke test
-- Docker image build and container health smoke test
-- Push to GitHub Container Registry as `ghcr.io/<owner>/hiresphere`
-- Push to Docker Hub as `rahultipledocker/hiresphere`
-- No Kubernetes deployment stage. ArgoCD should deploy this Helm chart.
+### Manual CI/CD selector
 
-Optional repository variables:
+Open **Actions → HireSphere CI/CD → Run workflow** and choose a component:
 
-- `KUBE_NAMESPACE`: defaults to `hiresphere`
-- `HELM_RELEASE_NAME`: defaults to `hiresphere`
+- `all` builds and integration-tests the complete platform, then publishes the gateway and all eight services.
+- `gateway` integration-tests the complete platform, then publishes only the gateway image.
+- Selecting one service, such as `jobs`, smoke-tests and publishes only that service image.
 
-## Included Modules
+Pushes to `main` or `master` use the `all` flow automatically. Pull requests validate the Helm chart and integration-test the complete platform without publishing images.
 
-- Candidate and freelancer workspace
-- Job search with filters, save, apply, recommendations, and tracker
-- Project marketplace with filters, bidding, team invite actions, escrow milestones, and invoices
-- Professional social feed and referrals
-- Real-time interview mockup with 20-minute timer, camera/screen-share UI, chat, recording status, ratings, and STAR feedback
-- Candidate profile with resume, cover letter, photo, certificates, portfolio, and self-interview video upload states
-- HR studio for job and project creation
-- AI candidate matching shortlist panel
-- Heavy-scale architecture section for frontend, API gateway, microservices, WebSocket, Kafka, Redis, PostgreSQL, MongoDB, S3/Azure Blob, Kubernetes, Helm, Terraform, and CI/CD
+## Build one service
 
-## Generated Asset
+```bash
+docker build -f services/jobs/Dockerfile -t hiresphere-jobs .
+```
 
-The hero image was generated with the built-in image generation tool and copied into `assets/talent-command-center.png` for local project use.
+Replace `jobs` in the Dockerfile path and image name with any source folder from the table. A service container is intentionally consumed through the gateway because shared assets and same-origin messaging are provided there.
+
+## Architecture
+
+```text
+Browser
+  -> gateway shell :8080
+       -> /workspace/  -> workspace-service:8080
+       -> /jobs/       -> jobs-service:8080
+       -> /projects/   -> projects-service:8080
+       -> /network/    -> network-service:8080
+       -> /interview/  -> interview-service:8080
+       -> /profile/    -> profile-service:8080
+       -> /hr-studio/  -> hr-studio-service:8080
+       -> /scale/      -> scale-service:8080
+```
+
+## Security notes
+
+User-created content is rendered with DOM text nodes rather than interpolated `innerHTML`. Both gateway and service servers add clickjacking, MIME-sniffing, referrer, and Content Security Policy headers.

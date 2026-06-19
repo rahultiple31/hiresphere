@@ -15,6 +15,10 @@
 {{- end -}}
 {{- end -}}
 
+{{- define "hiresphere.componentFullname" -}}
+{{- printf "%s-%s" (include "hiresphere.fullname" .root) .component | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "hiresphere.labels" -}}
 helm.sh/chart: {{ include "hiresphere.chart" . }}
 {{ include "hiresphere.selectorLabels" . }}

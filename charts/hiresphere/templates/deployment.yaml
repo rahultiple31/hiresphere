@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "hiresphere.fullname" . }}
+  name: {{ include "hiresphere.componentFullname" (dict "root" . "component" "gateway") }}
   labels:
     {{- include "hiresphere.labels" . | nindent 4 }}
 spec:
@@ -11,10 +11,12 @@ spec:
   selector:
     matchLabels:
       {{- include "hiresphere.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: gateway
   template:
     metadata:
       labels:
         {{- include "hiresphere.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: gateway
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -31,7 +33,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ include "hiresphere.name" . }}
+        - name: gateway
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ include "hiresphere.image" . | quote }}
@@ -58,3 +60,48 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{ range .Values.microservices }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hiresphere.componentFullname" (dict "root" $ "component" .name) }}
+  labels:
+    {{- include "hiresphere.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ .name }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hiresphere.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ .name }}
+  template:
+    metadata:
+      labels:
+        {{- include "hiresphere.selectorLabels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ .name }}
+    spec:
+      serviceAccountName: {{ include "hiresphere.serviceAccountName" $ }}
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .name }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          image: {{ printf "%s:%s" .repository .tag | quote }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $.Values.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml $.Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml $.Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+{{ end }}

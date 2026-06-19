@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="HireSphere micro-frontend workspace" />
+    <title>HireSphere | Talent OS</title>
+    <link rel="stylesheet" href="/shell.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#workspace" aria-label="HireSphere workspace">
+          <span class="brand-mark">HS</span>
+          <span><strong>HireSphere</strong><small>Talent OS</small></span>
+        </a>
+        <nav class="nav-groups" id="navigation">
+          <button class="nav-item active" data-service="workspace" type="button"><span>01</span>Workspace</button>
+          <button class="nav-item" data-service="jobs" type="button"><span>02</span>Jobs</button>
+          <button class="nav-item" data-service="projects" type="button"><span>03</span>Projects</button>
+          <button class="nav-item" data-service="network" type="button"><span>04</span>Network</button>
+          <button class="nav-item" data-service="interview" type="button"><span>05</span>Interview</button>
+          <button class="nav-item" data-service="profile" type="button"><span>06</span>Profile</button>
+          <button class="nav-item" data-service="hr-studio" type="button"><span>07</span>HR Studio</button>
+          <button class="nav-item" data-service="scale" type="button"><span>08</span>Scale</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <label class="global-search">
+            <span>Search</span>
+            <input id="globalSearch" type="search" placeholder="Search this service" />
+          </label>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle theme">T</button>
+          <a class="primary-button" href="#interview">Schedule Interview</a>
+        </header>
+        <div class="service-status" id="serviceStatus" role="status">Workspace service</div>
+        <iframe id="serviceFrame" title="Workspace service" src="/workspace/" loading="eager"></iframe>
+      </main>
+    </div>
+    <script src="/shell.js"></script>
+  </body>
+</html>

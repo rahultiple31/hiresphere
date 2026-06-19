@@ -16,3 +16,24 @@ spec:
       {{- end }}
   selector:
     {{- include "hiresphere.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+{{ range .Values.microservices }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-service
+  labels:
+    {{- include "hiresphere.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ .name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "hiresphere.selectorLabels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ .name }}
+{{ end }}

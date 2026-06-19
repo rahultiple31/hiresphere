@@ -1,0 +1,10 @@
+import { element, setupServiceSearch } from "/shared/runtime.js";
+const data = [
+  { id: 101, title: "Build WebRTC Mock Interview Suite", owner: "PeoplePilot", budget: 62000, skills: ["WebRTC", "Node.js", "Recording"] },
+  { id: 102, title: "AI Resume Parser and Skill Graph", owner: "HireLabs", budget: 45000, skills: ["NLP", "Python", "Search"] },
+  { id: 103, title: "Escrow and Milestone Payment Engine", owner: "WorkTrust", budget: 80000, skills: ["Payments", "Java", "Security"] },
+  { id: 104, title: "Professional Referral Network", owner: "ReferralStack", budget: 22000, skills: ["React", "MongoDB", "Kafka"] }
+];
+const bids = new Set(); const list = document.querySelector("#projects");
+function render() { const query = document.querySelector("#skill").value.toLowerCase(); const budget = Number(document.querySelector("#budget").value); const filtered = data.filter((item) => `${item.title} ${item.owner} ${item.skills.join(" ")}`.toLowerCase().includes(query) && item.budget >= budget); list.replaceChildren(...filtered.map((item) => { const card = element("article", "card"); const header = element("header"); header.append(element("h2", "", item.title), element("span", "status", `$${item.budget.toLocaleString()}`)); card.append(header, element("p", "muted", item.owner)); const tags = element("div", "tags"); item.skills.forEach((skill) => tags.append(element("span", "tag", skill))); const actions = element("div", "actions"); const bid = element("button", "", bids.has(item.id) ? "Proposal sent" : "Bid project"); bid.addEventListener("click", () => { bids.add(item.id); render(); }); const invite = element("button", "secondary", "Invite team"); invite.addEventListener("click", () => { invite.textContent = "Invite copied"; }); actions.append(bid, invite); card.append(tags, actions); return card; })); if (!filtered.length) list.append(element("p", "notice", "No projects match these filters.")); }
+document.querySelectorAll("#skill,#budget").forEach((input) => input.addEventListener("input", render)); setupServiceSearch((query) => { document.querySelector("#skill").value = query; render(); }); render();

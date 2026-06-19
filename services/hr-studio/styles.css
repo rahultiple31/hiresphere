@@ -1,0 +1,6 @@
+.studio-grid { display: grid; grid-template-columns: repeat(3, minmax(240px, 1fr)); gap: 14px; }
+form { display: grid; gap: 10px; }
+.candidate { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.candidate strong, .candidate small { display: block; }
+.created { margin-top: 14px; }
+@media (max-width: 900px) { .studio-grid { grid-template-columns: 1fr; } }
