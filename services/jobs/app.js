@@ -1,4 +1,4 @@
-import { element, setupServiceSearch } from "/shared/runtime.js";
+import { element, setupServiceSearch } from "../shared/runtime.js";
 const jobs = [
   { id: 1, title: "Senior React + Spring Boot Engineer", company: "CloudNova Systems", location: "Remote", salary: 42, skills: ["React", "Spring Boot", "Kafka"], match: 96 },
   { id: 2, title: "DevOps Platform Lead", company: "FinGrid Labs", location: "Bengaluru", salary: 58, skills: ["Kubernetes", "Terraform", "AWS"], match: 91 },

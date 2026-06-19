@@ -1,12 +1,12 @@
 const services = Object.freeze({
-  workspace: { label: "Workspace", path: "/workspace/" },
-  jobs: { label: "Jobs", path: "/jobs/" },
-  projects: { label: "Projects", path: "/projects/" },
-  network: { label: "Network", path: "/network/" },
-  interview: { label: "Interview", path: "/interview/" },
-  profile: { label: "Profile", path: "/profile/" },
-  "hr-studio": { label: "HR Studio", path: "/hr-studio/" },
-  scale: { label: "Scale", path: "/scale/" }
+  workspace: { label: "Workspace", path: "workspace/" },
+  jobs: { label: "Jobs", path: "jobs/" },
+  projects: { label: "Projects", path: "projects/" },
+  network: { label: "Network", path: "network/" },
+  interview: { label: "Interview", path: "interview/" },
+  profile: { label: "Profile", path: "profile/" },
+  "hr-studio": { label: "HR Studio", path: "hr-studio/" },
+  scale: { label: "Scale", path: "scale/" }
 });
 
 const frame = document.querySelector("#serviceFrame");

@@ -1,4 +1,4 @@
-import { element, setupServiceSearch } from "/shared/runtime.js";
+import { element, setupServiceSearch } from "../shared/runtime.js";
 const duration = 20 * 60; let remaining = duration; let handle = null;
 const timer = document.querySelector("#timer"); const recording = document.querySelector("#recording");
 function display() { timer.textContent = `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`; }

@@ -1,4 +1,4 @@
-import { element, setupServiceSearch } from "/shared/runtime.js";
+import { element, setupServiceSearch } from "../shared/runtime.js";
 const data = [
   { id: 101, title: "Build WebRTC Mock Interview Suite", owner: "PeoplePilot", budget: 62000, skills: ["WebRTC", "Node.js", "Recording"] },
   { id: 102, title: "AI Resume Parser and Skill Graph", owner: "HireLabs", budget: 45000, skills: ["NLP", "Python", "Search"] },

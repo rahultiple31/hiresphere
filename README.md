@@ -60,6 +60,12 @@ Open **Actions → HireSphere CI/CD → Run workflow** and choose a component:
 
 Pushes to `main` or `master` use the `all` flow automatically. Pull requests validate the Helm chart and integration-test the complete platform without publishing images.
 
+## GitHub Pages
+
+The `Deploy HireSphere to GitHub Pages` workflow assembles the gateway, shared assets, and all eight services into one static Pages artifact. In repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
+
+After pushing to `main` or `master`, the site is available at `https://<username>.github.io/<repository>/`. The same source remains compatible with the Docker gateway because all browser-facing paths are relative.
+
 ## Build one service
 
 ```bash

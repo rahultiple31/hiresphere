@@ -1,4 +1,4 @@
-import { element, setupServiceSearch } from "/shared/runtime.js";
+import { element, setupServiceSearch } from "../shared/runtime.js";
 const posts = [
   { name: "Vikram K.", type: "Hiring", body: "Opening 12 cloud-native roles across React, Java, Kafka, and platform security." },
   { name: "Sara P.", type: "Project", body: "Looking for a three-person team to ship a payment reconciliation dashboard." },

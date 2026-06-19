@@ -1,4 +1,4 @@
-import { element, setupServiceSearch } from "/shared/runtime.js";
+import { element, setupServiceSearch } from "../shared/runtime.js";
 const candidates = [{ name: "Ananya Kulkarni", role: "Full Stack Engineer", score: 94 }, { name: "Nisha Sharma", role: "Cloud Product Engineer", score: 91 }, { name: "Imran Sheikh", role: "DevOps Lead", score: 88 }];
 const shortlist = new Set(); const target = document.querySelector("#candidates"); let query = "";
 function renderCandidates() { const visible = candidates.filter((candidate) => `${candidate.name} ${candidate.role}`.toLowerCase().includes(query)); target.replaceChildren(...visible.map((candidate) => { const row = element("article", "candidate"); const copy = element("div"); copy.append(element("strong", "", candidate.name), element("small", "", `${candidate.role} · ${candidate.score}%`)); const button = element("button", "secondary", shortlist.has(candidate.name) ? "Shortlisted" : "Shortlist"); button.addEventListener("click", () => { shortlist.add(candidate.name); renderCandidates(); }); row.append(copy, button); return row; })); }
