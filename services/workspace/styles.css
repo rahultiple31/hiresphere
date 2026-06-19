@@ -1,3 +1,1 @@
-.metrics { margin-bottom: 14px; }
-.metrics strong { display: block; margin-top: 8px; font-size: 2rem; }
-.workspace-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */

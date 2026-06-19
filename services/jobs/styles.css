@@ -1,1 +1,1 @@
-#results { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */

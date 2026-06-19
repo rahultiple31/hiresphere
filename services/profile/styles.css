@@ -1,5 +1,1 @@
-.profile-grid { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(300px, 1.2fr); gap: 14px; }
-.avatar { display: grid; place-items: center; width: 92px; aspect-ratio: 1; border-radius: 50%; background: var(--mint); color: var(--surface); font-size: 1.7rem; font-weight: 900; }
-form { display: grid; gap: 12px; }
-#saved { margin-top: 14px; }
-@media (max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */

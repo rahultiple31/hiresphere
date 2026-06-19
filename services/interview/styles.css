@@ -1,8 +1,1 @@
-.timer { display: grid; text-align: right; }
-.timer strong { font-size: 2rem; }
-.interview-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
-.stage { text-align: center; }
-.avatar { display: grid; place-items: center; width: 120px; margin: 30px auto 14px; aspect-ratio: 1; border-radius: 50%; background: var(--mint); color: var(--surface); font-size: 2rem; font-weight: 900; }
-#messages { min-height: 150px; max-height: 260px; overflow: auto; }
-.feedback { margin-top: 14px; }
-@media (max-width: 700px) { .interview-grid { grid-template-columns: 1fr; } }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */

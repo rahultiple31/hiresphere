@@ -1,3 +1,1 @@
-#composer { display: grid; gap: 12px; margin-bottom: 16px; }
-#composer .actions { display: grid; grid-template-columns: 1fr auto; }
-.post { margin-bottom: 12px; }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */

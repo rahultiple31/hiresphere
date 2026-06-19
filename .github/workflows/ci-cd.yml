@@ -71,7 +71,7 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check "$APP_DIR/gateway/app.js"
-          for script in "$APP_DIR/services/shared/runtime.js" "$APP_DIR"/services/*/app.js; do
+          for script in "$APP_DIR"/services/shared/*.js "$APP_DIR"/services/*/app.js; do
             node --input-type=module --check < "$script"
           done
 

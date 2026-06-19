@@ -34,6 +34,8 @@ jobs:
           cp gateway/app.js pages-dist/shell.js
           cp gateway/styles.css pages-dist/shell.css
           cp services/shared/base.css pages-dist/shared/base.css
+          cp services/shared/frame.css pages-dist/shared/frame.css
+          cp services/shared/platform.js pages-dist/shared/platform.js
           cp services/shared/runtime.js pages-dist/shared/runtime.js
           if [ -d assets ]; then cp -R assets pages-dist/assets; fi
           for service in workspace jobs projects network interview profile hr-studio scale; do
@@ -50,6 +52,7 @@ jobs:
           test -f pages-dist/index.html
           test -f pages-dist/shell.js
           test -f pages-dist/shared/runtime.js
+          test -f pages-dist/shared/platform.js
           for service in workspace jobs projects network interview profile hr-studio scale; do
             test -f "pages-dist/$service/index.html"
             test -f "pages-dist/$service/app.js"

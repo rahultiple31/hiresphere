@@ -1,3 +1,1 @@
-.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 18px; }
-.flow span { padding: 14px 8px; border-radius: 10px; background: var(--mint); color: var(--surface); text-align: center; font-weight: 800; }
-@media (max-width: 700px) { .flow { grid-template-columns: 1fr; } }
+/* Service-specific overrides belong here. The original UI is shared unchanged. */
