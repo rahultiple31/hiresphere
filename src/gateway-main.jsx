@@ -98,12 +98,12 @@ function App() {
         <span><strong>HireSphere</strong><small>Talent OS</small></span>
       </a>
       <nav className="nav-groups">
-        {Object.entries(routes).map(([key, [label,, icon]]) => <React.Fragment key={key}>
-          <button className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
+        <SidebarProfile />
+        {Object.entries(routes).map(([key, [label,, icon]]) =>
+          <button key={key} className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
             <span className="nav-icon">{icon}</span>{label}
           </button>
-          {key === "workspace" && <SidebarProfile />}
-        </React.Fragment>)}
+        )}
       </nav>
       <div className="role-switcher">
         <span>Active role</span>

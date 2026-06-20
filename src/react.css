@@ -1,21 +1,23 @@
 .react-shell { min-height: 100vh; }
 .react-shell.app-shell { grid-template-columns: 320px minmax(0, 1fr); }
 .react-shell .sidebar { padding: 16px; gap: 16px; overflow-y: auto; scrollbar-width: thin; }
-.sidebar-profile-card {
+.profile-overview-card.sidebar-profile-card {
   flex: 0 0 auto;
   margin: 0;
-  border-color: #d9dfdc;
+  border-color: #39443f;
   border-radius: 16px;
-  background: #fff;
-  color: #07101f;
+  background: #1b2320;
+  color: #fff;
   box-shadow: none;
 }
 .sidebar-profile-card .profile-overview-main { padding: 20px 12px 16px; }
 .sidebar-profile-card .profile-completion { width: 110px; height: 110px; }
 .sidebar-profile-card .profile-completion::before,
-.sidebar-profile-card .profile-completion > strong { background: #fff; }
+.sidebar-profile-card .profile-completion > strong { background: #1b2320; }
 .sidebar-profile-card .profile-avatar { width: 88px; height: 88px; }
-.sidebar-profile-card .profile-overview-main h2 { margin-top: 18px; }
+.sidebar-profile-card .profile-overview-main h2 { margin-top: 18px; color: #fff; }
+.sidebar-profile-card .profile-overview-main p { color: #f3f8f5; }
+.sidebar-profile-card .profile-overview-main small { color: #c7d2cd; }
 .sidebar-status { margin-top: 14px; color: var(--muted); font-size: .76rem; display: flex; align-items: center; gap: 8px; }
 .live-dot, .service-health i { width: 8px; height: 8px; border-radius: 50%; background: #38c793; box-shadow: 0 0 0 4px rgb(56 199 147 / 12%); }
 .notification-button { position: relative; }
