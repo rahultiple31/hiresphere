@@ -23,8 +23,10 @@
 .notification-button { position: relative; }
 .notification-button b { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; min-width: 18px; height: 18px; border-radius: 20px; padding: 0 4px; background: var(--coral); color: white; font-size: .65rem; }
 .service-heading { display: flex; align-items: center; justify-content: space-between; padding: 18px 4px 8px; }
-.service-heading > div { display: grid; gap: 2px; }
+.service-heading-main { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+.service-heading-title { display: grid; gap: 2px; }
 .service-heading strong { font-size: 1.35rem; }
+.service-heading .header-audience-switch { margin: 0; }
 .service-health { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .78rem; }
 .route-loader { height: 3px; overflow: hidden; background: var(--surface-2); border-radius: 4px; }
 .route-loader span { display: block; width: 35%; height: 100%; background: var(--teal); animation: route-progress .8s ease-in-out infinite alternate; }

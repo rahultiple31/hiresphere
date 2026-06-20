@@ -22,6 +22,12 @@ const initialNotifications = [
   ["Application update", "CloudNova moved your application to technical shortlist."]
 ];
 
+const workspaceAudienceTabs = {
+  talent: "Find work",
+  teams: "Hire talent",
+  builders: "Build"
+};
+
 function activeHash() {
   const value = window.location.hash.slice(1);
   return routes[value] ? value : "workspace";
@@ -49,6 +55,7 @@ function App() {
   const [trayOpen, setTrayOpen] = useState(false);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [search, setSearch] = useState("");
+  const [workspaceAudience, setWorkspaceAudience] = useState("talent");
   const [loading, setLoading] = useState(true);
   const [frameHeight, setFrameHeight] = useState(760);
   const frame = useRef(null);
@@ -90,6 +97,10 @@ function App() {
     frame.current?.contentWindow?.postMessage({ type: "hiresphere:search", query: search }, window.location.origin);
   }, [search]);
 
+  useEffect(() => {
+    frame.current?.contentWindow?.postMessage({ type: "hiresphere:audience", audience: workspaceAudience }, window.location.origin);
+  }, [workspaceAudience]);
+
   const route = routes[active];
   return <div className="app-shell react-shell">
     <aside className="sidebar" aria-label="Main navigation">
@@ -130,11 +141,20 @@ function App() {
         <div className="tray-head"><h2>Notifications</h2><button className="ghost-button" onClick={() => setNotifications([])}>Clear all</button></div>
         {notifications.length ? notifications.map(([title, body], index) => <article className="notification-item" key={`${title}-${index}`}><strong>{title}</strong><span>{body}</span></article>) : <article className="notification-item"><strong>All clear</strong><span>No new platform events.</span></article>}
       </section>}
-      <div className="service-heading"><div><span className="eyebrow">{role} workspace</span><strong>{route[0]}</strong></div><span className="service-health"><i />Live</span></div>
+      <div className="service-heading">
+        <div className="service-heading-main">
+          <div className="service-heading-title"><span className="eyebrow">{role} workspace</span><strong>{route[0]}</strong></div>
+          {active === "workspace" && <div className="audience-switch header-audience-switch" role="tablist" aria-label="Choose your goal">
+            {Object.entries(workspaceAudienceTabs).map(([key, label]) => <button key={key} role="tab" aria-selected={workspaceAudience === key} className={workspaceAudience === key ? "active" : ""} onClick={() => setWorkspaceAudience(key)}>{label}</button>)}
+          </div>}
+        </div>
+        <span className="service-health"><i />Live</span>
+      </div>
       {loading && <div className="route-loader"><span /></div>}
       <iframe id="serviceFrame" ref={frame} key={active} className={loading ? "service-frame-loading" : ""} title={`${route[0]} service`} src={route[1]} scrolling="no" height={frameHeight} onLoad={() => {
         setLoading(false);
         frame.current?.contentWindow?.postMessage({ type: "hiresphere:theme", dark }, window.location.origin);
+        frame.current?.contentWindow?.postMessage({ type: "hiresphere:audience", audience: workspaceAudience }, window.location.origin);
         if (search) frame.current?.contentWindow?.postMessage({ type: "hiresphere:search", query: search }, window.location.origin);
       }} />
     </main>

@@ -25,17 +25,17 @@ const Candidate = ({ candidate, action }) => <article className="candidate-row">
 
 const workspaceAudiences = {
   talent: {
-    tab: "Find work", eyebrow: "Your next move, matched", title: "Find work that moves your career forward.",
+    eyebrow: "Your next move, matched", title: "Find work that moves your career forward.",
     copy: "One profile unlocks high-fit roles, paid projects, warm referrals, and structured interview practice.",
     primary: ["See my best matches", "jobs"], secondary: ["Build my profile", "profile"], signal: "96% top match"
   },
   teams: {
-    tab: "Hire talent", eyebrow: "From opening to confident yes", title: "Turn hiring noise into a confident shortlist.",
+    eyebrow: "From opening to confident yes", title: "Turn hiring noise into a confident shortlist.",
     copy: "Source verified people, compare explainable match scores, interview consistently, and keep every decision in one place.",
     primary: ["Start hiring", "admin"], secondary: ["Explore talent", "jobs"], signal: "48h to shortlist"
   },
   builders: {
-    tab: "Build", eyebrow: "Specialists when momentum matters", title: "Build the team behind your next big release.",
+    eyebrow: "Specialists when momentum matters", title: "Build the team behind your next big release.",
     copy: "Discover proven specialists, fund protected milestones, assemble flexible teams, and ship without the usual marketplace chaos.",
     primary: ["Browse specialists", "projects"], secondary: ["Create a project", "admin"], signal: "$428K protected"
   }
@@ -44,6 +44,15 @@ const workspaceAudiences = {
 function Workspace() {
   const [audience, setAudience] = useState("talent");
   useShellBridge();
+  useEffect(() => {
+    const receiveAudience = (event) => {
+      if (event.origin !== window.location.origin) return;
+      const nextAudience = event.data?.audience;
+      if (event.data?.type === "hiresphere:audience" && workspaceAudiences[nextAudience]) setAudience(nextAudience);
+    };
+    window.addEventListener("message", receiveAudience);
+    return () => window.removeEventListener("message", receiveAudience);
+  }, []);
   const message = workspaceAudiences[audience];
   const categories = [
     ["Engineering", "1,240 opportunities", "React, Java, Cloud", "jobs"],
@@ -53,10 +62,6 @@ function Workspace() {
   ];
 
   return <section className="view active landing-view">
-    <div className="audience-switch" role="tablist" aria-label="Choose your goal">
-      {Object.entries(workspaceAudiences).map(([key, item]) => <button key={key} role="tab" aria-selected={audience === key} className={audience === key ? "active" : ""} onClick={() => setAudience(key)}>{item.tab}</button>)}
-    </div>
-
     <div className="workspace-hero conversion-hero">
       <img src="./talent-command-center.png" alt="Talent and hiring activity inside HireSphere" />
       <div className="hero-copy">
