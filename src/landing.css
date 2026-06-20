@@ -5,17 +5,6 @@
   padding-bottom: 8px;
 }
 
-.landing-top-layout {
-  display: grid;
-  grid-template-columns: minmax(245px, 292px) minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-}
-
-.landing-feature-column {
-  min-width: 0;
-}
-
 .profile-overview-card {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -582,10 +571,6 @@ body.dark .landing-cta { background: #27322e; color: white; }
 .landing-cta button { min-height: 48px; }
 
 @media (max-width: 1000px) {
-  .landing-top-layout { grid-template-columns: 1fr; }
-  .landing-feature-column { order: 1; }
-  .profile-overview-card { order: 2; display: grid; grid-template-columns: minmax(220px, .8fr) 1.2fr; }
-  .profile-performance-card { align-self: center; margin: 14px 14px 14px 0; }
   .opportunity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-signal-card { display: none; }
   .outcome-story { grid-template-columns: 1fr; }
@@ -597,9 +582,6 @@ body.dark .landing-cta { background: #27322e; color: white; }
   .landing-view { padding-right: 12px; }
   .audience-switch { width: 100%; }
   .audience-switch button { flex: 1 1 0; padding-inline: 5px; font-size: .72rem; }
-  .profile-overview-card { grid-template-columns: 1fr; border-radius: 15px; }
-  .profile-overview-main { padding-top: 26px; }
-  .profile-performance-card { margin: 0 12px 12px; }
   .conversion-hero { min-height: 650px; border-radius: 15px; }
   .conversion-hero .hero-copy { width: 100%; max-width: 100%; padding: 28px 22px; }
   .conversion-hero .hero-copy h1 { font-size: clamp(1.85rem, 8.8vw, 2.5rem); line-height: 1; }

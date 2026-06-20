@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "../services/shared/base.css";
 import "../gateway/styles.css";
 import "./react.css";
+import "./landing.css";
 
 const routes = {
   workspace: ["Workspace", "workspace/", "⌂"],
@@ -24,6 +25,30 @@ const initialNotifications = [
 function activeHash() {
   const value = window.location.hash.slice(1);
   return routes[value] ? value : "workspace";
+}
+
+function SidebarProfile({ onNavigate }) {
+  return <section className="profile-overview-card sidebar-profile-card" aria-label="Candidate profile overview">
+    <div className="profile-overview-main">
+      <div className="profile-completion">
+        <div className="profile-avatar" aria-label="Rahul Tiple profile photo">RT</div>
+        <strong>100%</strong>
+      </div>
+      <h2>Rahul Tiple</h2>
+      <p>DevOps Engineer</p>
+      <p className="profile-company">@ Alyssum Global Services Pvt Ltd</p>
+      <small>Last updated 10m ago</small>
+      <button className="profile-view-button" onClick={() => onNavigate("profile")}>View profile</button>
+    </div>
+    <section className="profile-performance-card">
+      <div className="profile-performance-head"><h3>Profile performance</h3><span title="Performance over the last 90 days">i</span></div>
+      <div className="profile-performance-stats">
+        <div><small>Search appearances</small><strong>1,498<sup /></strong></div>
+        <div><small>Recruiter actions</small><strong>112<sup /></strong></div>
+      </div>
+      <button className="profile-boost" onClick={() => onNavigate("profile")}><span>3x</span><strong>Boost your profile performance</strong><b>›</b></button>
+    </section>
+  </section>;
 }
 
 function App() {
@@ -82,10 +107,12 @@ function App() {
         <span><strong>HireSphere</strong><small>Talent OS</small></span>
       </a>
       <nav className="nav-groups">
-        {Object.entries(routes).map(([key, [label,, icon]]) =>
-          <button key={key} className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
+        {Object.entries(routes).map(([key, [label,, icon]]) => <React.Fragment key={key}>
+          <button className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
             <span className="nav-icon">{icon}</span>{label}
-          </button>)}
+          </button>
+          {key === "workspace" && <SidebarProfile onNavigate={go} />}
+        </React.Fragment>)}
       </nav>
       <div className="role-switcher">
         <span>Active role</span>

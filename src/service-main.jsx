@@ -53,53 +53,27 @@ function Workspace() {
   ];
 
   return <section className="view active landing-view">
-    <div className="landing-top-layout">
-      <aside className="profile-overview-card" aria-label="Candidate profile overview">
-        <div className="profile-overview-main">
-          <div className="profile-completion">
-            <div className="profile-avatar" aria-label="Rahul Tiple profile photo">RT</div>
-            <strong>100%</strong>
-          </div>
-          <h2>Rahul Tiple</h2>
-          <p>DevOps Engineer</p>
-          <p className="profile-company">@ Alyssum Global Services Pvt Ltd</p>
-          <small>Last updated 10m ago</small>
-          <button className="profile-view-button" onClick={() => navigate("profile")}>View profile</button>
-        </div>
-        <section className="profile-performance-card">
-          <div className="profile-performance-head"><h3>Profile performance</h3><span title="Performance over the last 90 days">i</span></div>
-          <div className="profile-performance-stats">
-            <div><small>Search appearances</small><strong>1,498<sup /></strong></div>
-            <div><small>Recruiter actions</small><strong>112<sup /></strong></div>
-          </div>
-          <button className="profile-boost" onClick={() => navigate("profile")}><span>3x</span><strong>Boost your profile performance</strong><b>›</b></button>
-        </section>
-      </aside>
+    <div className="audience-switch" role="tablist" aria-label="Choose your goal">
+      {Object.entries(workspaceAudiences).map(([key, item]) => <button key={key} role="tab" aria-selected={audience === key} className={audience === key ? "active" : ""} onClick={() => setAudience(key)}>{item.tab}</button>)}
+    </div>
 
-      <div className="landing-feature-column">
-        <div className="audience-switch" role="tablist" aria-label="Choose your goal">
-          {Object.entries(workspaceAudiences).map(([key, item]) => <button key={key} role="tab" aria-selected={audience === key} className={audience === key ? "active" : ""} onClick={() => setAudience(key)}>{item.tab}</button>)}
+    <div className="workspace-hero conversion-hero">
+      <img src="./talent-command-center.png" alt="Talent and hiring activity inside HireSphere" />
+      <div className="hero-copy">
+        <div className="hero-live"><span />12,000+ people building what comes next</div>
+        <span className="eyebrow">{message.eyebrow}</span>
+        <h1>{message.title}</h1>
+        <p>{message.copy}</p>
+        <div className="hero-actions">
+          <button className="primary-button hero-primary" onClick={() => navigate(message.primary[1])}>{message.primary[0]}</button>
+          <button className="secondary-button hero-secondary" onClick={() => navigate(message.secondary[1])}>{message.secondary[0]}</button>
         </div>
-
-        <div className="workspace-hero conversion-hero">
-          <img src="./talent-command-center.png" alt="Talent and hiring activity inside HireSphere" />
-          <div className="hero-copy">
-            <div className="hero-live"><span />12,000+ people building what comes next</div>
-            <span className="eyebrow">{message.eyebrow}</span>
-            <h1>{message.title}</h1>
-            <p>{message.copy}</p>
-            <div className="hero-actions">
-              <button className="primary-button hero-primary" onClick={() => navigate(message.primary[1])}>{message.primary[0]}</button>
-              <button className="secondary-button hero-secondary" onClick={() => navigate(message.secondary[1])}>{message.secondary[0]}</button>
-            </div>
-            <div className="hero-assurance"><span>No platform fee to join</span><span>Verified opportunities</span><span>Protected payments</span></div>
-          </div>
-          <aside className="hero-signal-card" aria-label="Live marketplace signal">
-            <div><span className="signal-label">Live marketplace</span><strong>{message.signal}</strong></div>
-            <div className="signal-people"><span>AK</span><span>NS</span><span>IS</span><small>+2.8k active today</small></div>
-          </aside>
-        </div>
+        <div className="hero-assurance"><span>No platform fee to join</span><span>Verified opportunities</span><span>Protected payments</span></div>
       </div>
+      <aside className="hero-signal-card" aria-label="Live marketplace signal">
+        <div><span className="signal-label">Live marketplace</span><strong>{message.signal}</strong></div>
+        <div className="signal-people"><span>AK</span><span>NS</span><span>IS</span><small>+2.8k active today</small></div>
+      </aside>
     </div>
 
     <section className="trust-strip" aria-label="Trusted companies">
