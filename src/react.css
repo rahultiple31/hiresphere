@@ -16,8 +16,6 @@
 .sidebar-profile-card .profile-completion > strong { background: #fff; }
 .sidebar-profile-card .profile-avatar { width: 88px; height: 88px; }
 .sidebar-profile-card .profile-overview-main h2 { margin-top: 18px; }
-.sidebar-profile-card .profile-performance-card { margin: 0 12px 12px; padding: 16px 12px 12px; }
-.sidebar-profile-card .profile-boost { padding: 12px; }
 .sidebar-status { margin-top: 14px; color: var(--muted); font-size: .76rem; display: flex; align-items: center; gap: 8px; }
 .live-dot, .service-health i { width: 8px; height: 8px; border-radius: 50%; background: #38c793; box-shadow: 0 0 0 4px rgb(56 199 147 / 12%); }
 .notification-button { position: relative; }

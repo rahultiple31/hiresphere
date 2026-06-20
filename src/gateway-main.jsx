@@ -27,7 +27,7 @@ function activeHash() {
   return routes[value] ? value : "workspace";
 }
 
-function SidebarProfile({ onNavigate }) {
+function SidebarProfile() {
   return <section className="profile-overview-card sidebar-profile-card" aria-label="Candidate profile overview">
     <div className="profile-overview-main">
       <div className="profile-completion">
@@ -38,16 +38,7 @@ function SidebarProfile({ onNavigate }) {
       <p>DevOps Engineer</p>
       <p className="profile-company">@ Alyssum Global Services Pvt Ltd</p>
       <small>Last updated 10m ago</small>
-      <button className="profile-view-button" onClick={() => onNavigate("profile")}>View profile</button>
     </div>
-    <section className="profile-performance-card">
-      <div className="profile-performance-head"><h3>Profile performance</h3><span title="Performance over the last 90 days">i</span></div>
-      <div className="profile-performance-stats">
-        <div><small>Search appearances</small><strong>1,498<sup /></strong></div>
-        <div><small>Recruiter actions</small><strong>112<sup /></strong></div>
-      </div>
-      <button className="profile-boost" onClick={() => onNavigate("profile")}><span>3x</span><strong>Boost your profile performance</strong><b>›</b></button>
-    </section>
   </section>;
 }
 
@@ -111,7 +102,7 @@ function App() {
           <button className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
             <span className="nav-icon">{icon}</span>{label}
           </button>
-          {key === "workspace" && <SidebarProfile onNavigate={go} />}
+          {key === "workspace" && <SidebarProfile />}
         </React.Fragment>)}
       </nav>
       <div className="role-switcher">
