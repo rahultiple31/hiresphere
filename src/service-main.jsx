@@ -5,6 +5,7 @@ import { navigate, notify, useShellBridge } from "./bridge.js";
 import "../services/shared/base.css";
 import "../services/shared/frame.css";
 import "./react.css";
+import "./landing.css";
 
 const SectionTitle = ({ eyebrow, title, children }) => <div className="section-title">
   <div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}
@@ -22,21 +23,86 @@ const Candidate = ({ candidate, action }) => <article className="candidate-row">
   <div className="candidate-actions"><span className="status-pill">{candidate.score}%</span>{action}</div>
 </article>;
 
+const workspaceAudiences = {
+  talent: {
+    tab: "Find work", eyebrow: "Your next move, matched", title: "Find work that moves your career forward.",
+    copy: "One profile unlocks high-fit roles, paid projects, warm referrals, and structured interview practice.",
+    primary: ["See my best matches", "jobs"], secondary: ["Build my profile", "profile"], signal: "96% top match"
+  },
+  teams: {
+    tab: "Hire talent", eyebrow: "From opening to confident yes", title: "Turn hiring noise into a confident shortlist.",
+    copy: "Source verified people, compare explainable match scores, interview consistently, and keep every decision in one place.",
+    primary: ["Start hiring", "admin"], secondary: ["Explore talent", "jobs"], signal: "48h to shortlist"
+  },
+  builders: {
+    tab: "Build", eyebrow: "Specialists when momentum matters", title: "Build the team behind your next big release.",
+    copy: "Discover proven specialists, fund protected milestones, assemble flexible teams, and ship without the usual marketplace chaos.",
+    primary: ["Browse specialists", "projects"], secondary: ["Create a project", "admin"], signal: "$428K protected"
+  }
+};
+
 function Workspace() {
+  const [audience, setAudience] = useState("talent");
   useShellBridge();
-  return <section className="view active">
-    <div className="workspace-hero">
-      <img src="./talent-command-center.png" alt="Talent marketplace command center" />
-      <div className="hero-copy"><span className="eyebrow">Enterprise hiring + freelancing ecosystem</span><h1>Build exceptional teams from one live operating layer.</h1><p>Discover talent, run structured interviews, manage freelance milestones, and turn hiring signals into confident decisions.</p><div className="hero-actions"><button className="primary-button" onClick={() => navigate("jobs")}>Explore jobs</button><button className="secondary-button" onClick={() => navigate("projects")}>Browse projects</button></div></div>
+  const message = workspaceAudiences[audience];
+  const categories = [
+    ["Engineering", "1,240 opportunities", "React, Java, Cloud", "jobs"],
+    ["AI & Data", "680 opportunities", "Python, NLP, Search", "jobs"],
+    ["Design", "390 opportunities", "Product, UX, Research", "projects"],
+    ["Cloud & DevOps", "520 opportunities", "AWS, Kubernetes, SRE", "jobs"]
+  ];
+
+  return <section className="view active landing-view">
+    <div className="audience-switch" role="tablist" aria-label="Choose your goal">
+      {Object.entries(workspaceAudiences).map(([key, item]) => <button key={key} role="tab" aria-selected={audience === key} className={audience === key ? "active" : ""} onClick={() => setAudience(key)}>{item.tab}</button>)}
     </div>
-    <div className="metric-grid">
-      {[["Open jobs", jobs.length, "AI-ranked by fit"], ["Projects", projects.length, "Milestone-ready"], ["Interviews", 18, "Scheduled this week"], ["Escrow", "$428K", "Protected payments"]].map(([label, value, detail]) => <article className="metric-block" key={label}><span>{label}</span><strong>{value}</strong><small>{detail}</small></article>)}
+
+    <div className="workspace-hero conversion-hero">
+      <img src="./talent-command-center.png" alt="Talent and hiring activity inside HireSphere" />
+      <div className="hero-copy">
+        <div className="hero-live"><span />12,000+ people building what comes next</div>
+        <span className="eyebrow">{message.eyebrow}</span>
+        <h1>{message.title}</h1>
+        <p>{message.copy}</p>
+        <div className="hero-actions">
+          <button className="primary-button hero-primary" onClick={() => navigate(message.primary[1])}>{message.primary[0]}</button>
+          <button className="secondary-button hero-secondary" onClick={() => navigate(message.secondary[1])}>{message.secondary[0]}</button>
+        </div>
+        <div className="hero-assurance"><span>No platform fee to join</span><span>Verified opportunities</span><span>Protected payments</span></div>
+      </div>
+      <aside className="hero-signal-card" aria-label="Live marketplace signal">
+        <div><span className="signal-label">Live marketplace</span><strong>{message.signal}</strong></div>
+        <div className="signal-people"><span>AK</span><span>NS</span><span>IS</span><small>+2.8k active today</small></div>
+      </aside>
     </div>
-    <div className="workspace-grid">
-      <section className="panel"><div className="panel-head"><h2>Best matches</h2><button className="ghost-button" onClick={() => navigate("jobs")}>View all</button></div><div className="compact-list">{jobs.slice(0, 3).map((job) => <article className="compact-card" key={job.id}><div><strong>{job.title}</strong><small>{job.company} · {job.location} · {job.salary} LPA</small></div><span className="status-pill">{job.match}%</span></article>)}</div></section>
-      <section className="panel"><div className="panel-head"><h2>Candidate pipeline</h2><span className="status-pill">Live scoring</span></div><div className="pipeline-list">{candidates.map((candidate) => <Candidate candidate={candidate} key={candidate.name} />)}</div></section>
-      <section className="panel wide-panel"><div className="panel-head"><h2>Hiring feed</h2><button className="ghost-button" onClick={() => navigate("network")}>Open feed</button></div><div className="feed-stack">{seedFeed.slice(0, 2).map((post) => <FeedItem post={post} key={post.name} />)}</div></section>
+
+    <section className="trust-strip" aria-label="Trusted companies">
+      <span>Trusted by ambitious teams</span>
+      {["CloudNova", "FinGrid", "PeoplePilot", "Northstar", "ScaleBridge"].map((company) => <strong key={company}>{company}</strong>)}
+    </section>
+
+    <div className="metric-grid impact-metrics">
+      {[["12.4K", "Verified professionals", "Skills and identity checked"], ["92%", "Quality match rate", "Explainable recommendations"], ["<48h", "Average shortlist", "Less noise, faster decisions"], ["$428K", "Protected in escrow", "Milestone-based releases"]].map(([value, label, detail]) => <article className="metric-block" key={label}><strong>{value}</strong><span>{label}</span><small>{detail}</small></article>)}
     </div>
+
+    <section className="landing-section">
+      <div className="landing-section-head"><div><span className="eyebrow">Explore your path</span><h2>Opportunity should feel specific to you.</h2></div><button className="ghost-button" onClick={() => navigate("jobs")}>View every opportunity</button></div>
+      <div className="opportunity-grid">{categories.map(([title, count, skills, destination], index) => <button className="opportunity-card" key={title} onClick={() => navigate(destination)}><span className="opportunity-index">0{index + 1}</span><strong>{title}</strong><small>{count}</small><p>{skills}</p><span className="opportunity-link">Explore</span></button>)}</div>
+    </section>
+
+    <section className="outcome-story">
+      <div className="story-quote"><span className="eyebrow">Real momentum</span><blockquote>“I went from invisible applications to three conversations with teams I actually wanted to join—in one week.”</blockquote><div className="story-person"><span>NS</span><div><strong>Nisha Sharma</strong><small>Cloud Product Engineer</small></div></div></div>
+      <div className="journey-steps">
+        {[["01", "Show your signal", "Create one rich profile with verified skills, work, and interview strengths."], ["02", "Meet the right fit", "See roles, projects, and people ranked by relevance—not ad spend."], ["03", "Move with confidence", "Interview, collaborate, and manage protected milestones in one flow."]].map(([number, title, copy]) => <article key={number}><span>{number}</span><div><strong>{title}</strong><p>{copy}</p></div></article>)}
+      </div>
+    </section>
+
+    <div className="workspace-grid proof-grid">
+      <section className="panel"><div className="panel-head"><div><span className="eyebrow">For talent</span><h2>Best matches right now</h2></div><button className="ghost-button" onClick={() => navigate("jobs")}>View all</button></div><div className="compact-list">{jobs.slice(0, 3).map((job) => <article className="compact-card" key={job.id}><div><strong>{job.title}</strong><small>{job.company} · {job.location} · {job.salary} LPA</small></div><span className="status-pill">{job.match}%</span></article>)}</div></section>
+      <section className="panel"><div className="panel-head"><div><span className="eyebrow">For teams</span><h2>High-signal talent</h2></div><span className="status-pill">Live scoring</span></div><div className="pipeline-list">{candidates.slice(0, 3).map((candidate) => <Candidate candidate={candidate} key={candidate.name} />)}</div></section>
+    </div>
+
+    <section className="landing-cta"><div><span className="eyebrow">Your next chapter is already here</span><h2>Come for one opportunity. Stay for an entire career ecosystem.</h2><p>Jobs, freelance projects, trusted people, better interviews, and protected work—connected at last.</p></div><div><button className="primary-button" onClick={() => navigate("jobs")}>Find your opportunity</button><button className="secondary-button" onClick={() => navigate("admin")}>Hire exceptional people</button></div></section>
   </section>;
 }
 
