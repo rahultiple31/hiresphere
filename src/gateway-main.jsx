@@ -51,7 +51,10 @@ function SidebarProfile() {
 function App() {
   const [active, setActive] = useState(activeHash);
   const [role, setRole] = useState("Candidate");
-  const [dark, setDark] = useState(() => localStorage.getItem("hiresphere-theme") === "dark");
+  const [dark, setDark] = useState(() => {
+    const savedTheme = localStorage.getItem("hiresphere-theme");
+    return savedTheme ? savedTheme === "dark" : window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+  });
   const [trayOpen, setTrayOpen] = useState(false);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [search, setSearch] = useState("");
@@ -132,7 +135,7 @@ function App() {
       <header className="topbar">
         <label className="global-search"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} type="search" placeholder="Jobs, projects, people, skills" /></label>
         <div className="top-actions">
-          <button className="icon-button" onClick={() => setDark((value) => !value)} aria-label="Toggle theme">{dark ? "☀" : "☾"}</button>
+          <button className="icon-button" onClick={() => setDark((value) => !value)} aria-label={dark ? "Switch to day mode" : "Switch to night mode"} title={dark ? "Day mode" : "Night mode"}>{dark ? "☀" : "☾"}</button>
           <button className="icon-button notification-button" onClick={() => setTrayOpen((value) => !value)} aria-label="Notifications">♢{notifications.length > 0 && <b>{notifications.length}</b>}</button>
           <button className="primary-button" onClick={() => go("interview")}>Schedule interview</button>
         </div>
