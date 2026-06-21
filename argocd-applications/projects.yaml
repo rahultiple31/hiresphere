@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: projects
+  namespace: argocd
+spec:
+  project: hiresphere-project
+  source:
+    repoURL: https://github.com/your-org/hiresphere.git
+    targetRevision: main
+    path: charts/projects
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hiresphere-projects
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

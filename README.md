@@ -45,15 +45,26 @@ npm ci
 npm run dev
 ```
 
-For a Kubernetes deployment, use the Helm chart directly instead of Docker Compose:
+For a Kubernetes deployment, use the per-service Helm charts directly instead of Docker Compose:
 
 ```bash
-helm upgrade --install hiresphere charts/hiresphere \
-  --namespace hiresphere \
+helm upgrade --install gateway charts/gateway \
+  --namespace hiresphere-gateway \
+  --create-namespace
+
+helm upgrade --install api charts/api \
+  --namespace hiresphere-api \
   --create-namespace
 ```
 
-If you still want a quick local containerized smoke test, Docker Compose may be used only for debugging; the actual application deployment flow for this repo is Kubernetes + Helm.
+For GitOps-based delivery, apply the bootstrap manifest and one Argo CD Application per service:
+
+```bash
+kubectl apply -f argocd-bootstrap.yaml
+kubectl apply -f argocd-applications/
+```
+
+If you still want a quick local containerized smoke test, Docker Compose may be used only for debugging; the actual application deployment flow for this repo is Kubernetes + Helm + Argo CD.
 
 ## Production builds
 
@@ -74,33 +85,28 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 ## Deployment
 
 - Docker Compose is optional only for local debugging or smoke testing.
-- The Helm chart is the production deployment path for all microservices on Kubernetes.
+- Each service has its own Helm chart under `charts/` and its own namespace for isolation.
+- The repo includes per-service Argo CD application manifests under `argocd-applications/`.
 - `.github/workflows/ci-cd.yml` compiles React, validates Helm manifests, and publishes selected images.
 - `.github/workflows/static.yml` builds `dist/` and deploys it to GitHub Pages.
 
-Only the gateway publishes a host port. Internal containers communicate through the private `hiresphere` network.
-
-Install the application and database layer:
+Install the gateway and API with isolated namespaces:
 
 ```bash
-helm upgrade --install hiresphere charts/hiresphere \
-  --namespace hiresphere \
+helm upgrade --install gateway charts/gateway \
+  --namespace hiresphere-gateway \
+  --create-namespace
+
+helm upgrade --install api charts/api \
+  --namespace hiresphere-api \
   --create-namespace
 ```
 
-For production, provide a pre-created Secret instead of chart-managed credentials. It must contain `postgres-database`, `postgres-username`, `postgres-password`, `mongodb-database`, `mongodb-root-username`, and `mongodb-root-password`:
+Apply the GitOps bootstrap and application definitions:
 
 ```bash
-helm upgrade --install hiresphere charts/hiresphere \
-  --namespace hiresphere \
-  --create-namespace \
-  --set database.auth.existingSecret=hiresphere-database-credentials
+kubectl apply -f argocd-bootstrap.yaml
+kubectl apply -f argocd-applications/
 ```
 
-Check the unified database workload:
-
-```bash
-kubectl get statefulset,pod,pvc,service \
-  -n hiresphere \
-  -l app.kubernetes.io/component=database
-```
+For production, each service can still use explicit values overrides and image pull secrets. The Argo CD project allows the platform to sync each chart into its own namespace independently.

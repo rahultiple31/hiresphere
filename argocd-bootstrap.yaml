@@ -1,6 +1,3 @@
-# Argo CD bootstrap resources for HireSphere
-# Apply these after Argo CD is installed in the cluster.
-
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -9,35 +6,52 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: hiresphere
+  name: hiresphere-gateway
 ---
 apiVersion: v1
-kind: Secret
+kind: Namespace
 metadata:
-  name: regcred
-  namespace: hiresphere
-type: kubernetes.io/dockerconfigjson
-stringData:
-  .dockerconfigjson: |
-    {
-      "auths": {
-        "https://index.docker.io/v1/": {
-          "auth": "<base64-encoded-dockerhub-username:token>"
-        }
-      }
-    }
+  name: hiresphere-api
 ---
 apiVersion: v1
-kind: Secret
+kind: Namespace
 metadata:
-  name: hiresphere-tls
-  namespace: hiresphere
-type: kubernetes.io/tls
-stringData:
-  tls.crt: |
-    <your-cert-chain>
-  tls.key: |
-    <your-private-key>
+  name: hiresphere-workspace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-jobs
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-projects
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-network
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-interview
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-profile
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-hr-studio
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere-scale
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -45,23 +59,39 @@ metadata:
   name: hiresphere-project
   namespace: argocd
 spec:
-  description: HireSphere production deployment
+  description: HireSphere per-service GitOps project
   sourceRepos:
     - https://github.com/your-org/hiresphere.git
   destinations:
-    - namespace: hiresphere
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-gateway
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-api
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-workspace
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-jobs
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-projects
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-network
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-interview
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-profile
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-hr-studio
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-scale
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: ''
       kind: Namespace
     - group: ''
       kind: Service
-    - group: ''
-      kind: Secret
     - group: apps
       kind: Deployment
-    - group: apps
-      kind: StatefulSet
     - group: networking.k8s.io
       kind: Ingress
   namespaceResourceWhitelist:
@@ -73,32 +103,5 @@ spec:
       kind: Service
     - group: apps
       kind: Deployment
-    - group: apps
-      kind: StatefulSet
     - group: networking.k8s.io
       kind: Ingress
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: hiresphere
-  namespace: argocd
-spec:
-  project: hiresphere-project
-  source:
-    repoURL: https://github.com/your-org/hiresphere.git
-    targetRevision: main
-    path: charts/hiresphere
-    helm:
-      valueFiles:
-        - values-prod.example.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: hiresphere
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
