@@ -55,7 +55,7 @@ jobs:
       - name: Check required files
         run: |
           ! grep -R "github.com/your-org\|git@github.com" argocd-application.yaml argocd-bootstrap.yaml argocd-project.yaml argocd-applications
-          test "$(grep -R 'repoURL: https://github.com/rahultiple31/hiresphere.git' argocd-applications/*.yaml | wc -l)" -eq 10
+          test "$(grep -R 'repoURL: https://github.com/rahultiple31/hiresphere.git' argocd-applications/*.yaml | wc -l)" -eq 11
           test -f "$APP_DIR/index.html"
           test -f "$APP_DIR/gateway/styles.css"
           test -f "$APP_DIR/src/gateway-main.jsx"

@@ -117,6 +117,7 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 ## Deployment
 
 - Docker Compose is optional only for local debugging or smoke testing.
+- The `charts/hiresphere` platform chart is a required production deployment.
 - Each service has its own Helm chart under `charts/` and its own namespace for isolation.
 - The repo includes per-service Argo CD application manifests under `argocd-applications/`.
 - `.github/workflows/ci-cd.yml` compiles React, validates Helm manifests, and publishes selected images.
@@ -125,6 +126,11 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 Install the gateway, API, and frontend services with the exact per-service namespaces:
 
 ```bash
+helm upgrade --install hiresphere charts/hiresphere \
+  --namespace hiresphere \
+  --create-namespace \
+  --values charts/hiresphere/values-prod.yaml
+
 helm upgrade --install api charts/api \
   --namespace hiresphere-api \
   --create-namespace
@@ -166,7 +172,8 @@ helm upgrade --install scale charts/scale \
   --create-namespace
 ```
 
-Apply the GitOps bootstrap and application definitions:
+Apply the GitOps bootstrap and all required application definitions, including
+the mandatory `hiresphere` platform application:
 
 ```bash
 kubectl apply -f argocd-bootstrap.yaml

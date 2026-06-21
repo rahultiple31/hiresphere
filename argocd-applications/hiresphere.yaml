@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hiresphere
+  namespace: argocd
+spec:
+  project: hiresphere-project
+  source:
+    repoURL: https://github.com/rahultiple31/hiresphere.git
+    targetRevision: main
+    path: charts/hiresphere
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hiresphere
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

@@ -214,6 +214,11 @@ write(
     apiVersion: v1
     kind: Namespace
     metadata:
+      name: hiresphere
+    ---
+    apiVersion: v1
+    kind: Namespace
+    metadata:
       name: hiresphere-gateway
     ---
     apiVersion: v1
@@ -273,6 +278,8 @@ write(
       destinations:
         - namespace: argocd
           server: https://kubernetes.default.svc
+        - namespace: hiresphere
+          server: https://kubernetes.default.svc
         - namespace: hiresphere-gateway
           server: https://kubernetes.default.svc
         - namespace: hiresphere-api
@@ -309,8 +316,14 @@ write(
           kind: Secret
         - group: ''
           kind: Service
+        - group: ''
+          kind: ServiceAccount
         - group: apps
           kind: Deployment
+        - group: apps
+          kind: StatefulSet
+        - group: autoscaling
+          kind: HorizontalPodAutoscaler
         - group: networking.k8s.io
           kind: Ingress
     """,
@@ -346,5 +359,35 @@ for service_name, _, chart_name in services:
               - ApplyOutOfSyncOnly=true
         """,
     )
+
+write(
+    applications_dir / "hiresphere.yaml",
+    f"""
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      name: hiresphere
+      namespace: argocd
+    spec:
+      project: hiresphere-project
+      source:
+        repoURL: {repo_url}
+        targetRevision: main
+        path: charts/hiresphere
+        helm:
+          valueFiles:
+            - values-prod.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: hiresphere
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+    """,
+)
 
 print("Generated per-service GitOps files.")
