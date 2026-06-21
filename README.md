@@ -45,15 +45,47 @@ npm ci
 npm run dev
 ```
 
-For a Kubernetes deployment, use the per-service Helm charts directly instead of Docker Compose:
+For a Kubernetes deployment, use the per-service Helm charts directly instead of Docker Compose. The exact install flow is:
 
 ```bash
+helm upgrade --install api charts/api \
+  --namespace hiresphere-api \
+  --create-namespace
+
 helm upgrade --install gateway charts/gateway \
   --namespace hiresphere-gateway \
   --create-namespace
 
-helm upgrade --install api charts/api \
-  --namespace hiresphere-api \
+helm upgrade --install workspace charts/workspace \
+  --namespace hiresphere-workspace \
+  --create-namespace
+
+helm upgrade --install jobs charts/jobs \
+  --namespace hiresphere-jobs \
+  --create-namespace
+
+helm upgrade --install projects charts/projects \
+  --namespace hiresphere-projects \
+  --create-namespace
+
+helm upgrade --install network charts/network \
+  --namespace hiresphere-network \
+  --create-namespace
+
+helm upgrade --install interview charts/interview \
+  --namespace hiresphere-interview \
+  --create-namespace
+
+helm upgrade --install profile charts/profile \
+  --namespace hiresphere-profile \
+  --create-namespace
+
+helm upgrade --install hr-studio charts/hr-studio \
+  --namespace hiresphere-hr-studio \
+  --create-namespace
+
+helm upgrade --install scale charts/scale \
+  --namespace hiresphere-scale \
   --create-namespace
 ```
 
@@ -90,15 +122,47 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 - `.github/workflows/ci-cd.yml` compiles React, validates Helm manifests, and publishes selected images.
 - `.github/workflows/static.yml` builds `dist/` and deploys it to GitHub Pages.
 
-Install the gateway and API with isolated namespaces:
+Install the gateway, API, and frontend services with the exact per-service namespaces:
 
 ```bash
+helm upgrade --install api charts/api \
+  --namespace hiresphere-api \
+  --create-namespace
+
 helm upgrade --install gateway charts/gateway \
   --namespace hiresphere-gateway \
   --create-namespace
 
-helm upgrade --install api charts/api \
-  --namespace hiresphere-api \
+helm upgrade --install workspace charts/workspace \
+  --namespace hiresphere-workspace \
+  --create-namespace
+
+helm upgrade --install jobs charts/jobs \
+  --namespace hiresphere-jobs \
+  --create-namespace
+
+helm upgrade --install projects charts/projects \
+  --namespace hiresphere-projects \
+  --create-namespace
+
+helm upgrade --install network charts/network \
+  --namespace hiresphere-network \
+  --create-namespace
+
+helm upgrade --install interview charts/interview \
+  --namespace hiresphere-interview \
+  --create-namespace
+
+helm upgrade --install profile charts/profile \
+  --namespace hiresphere-profile \
+  --create-namespace
+
+helm upgrade --install hr-studio charts/hr-studio \
+  --namespace hiresphere-hr-studio \
+  --create-namespace
+
+helm upgrade --install scale charts/scale \
+  --namespace hiresphere-scale \
   --create-namespace
 ```
 

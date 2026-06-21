@@ -66,13 +66,29 @@ jobs:
             test -f "$APP_DIR/services/$service/styles.css"
             test -f "$APP_DIR/services/$service/Dockerfile"
           done
-          test -f "$CHART_PATH/Chart.yaml"
-          test -f "$CHART_PATH/values.yaml"
-          test -f "$CHART_PATH/values.schema.json"
-          test -f "$CHART_PATH/templates/database-secret.yaml"
-          test -f "$CHART_PATH/templates/database-configmap.yaml"
-          test -f "$CHART_PATH/templates/database-statefulset.yaml"
-          test -f "$CHART_PATH/templates/database-service.yaml"
+
+          for chart in \
+            charts/api \
+            charts/gateway \
+            charts/hiresphere \
+            charts/hr-studio \
+            charts/interview \
+            charts/jobs \
+            charts/network \
+            charts/profile \
+            charts/projects \
+            charts/scale \
+            charts/workspace; do
+            test -f "$chart/Chart.yaml"
+            test -f "$chart/values.yaml"
+            if [ "$chart" = "charts/hiresphere" ]; then
+              test -f "$chart/values.schema.json"
+              test -f "$chart/templates/database-secret.yaml"
+              test -f "$chart/templates/database-configmap.yaml"
+              test -f "$chart/templates/database-statefulset.yaml"
+              test -f "$chart/templates/database-service.yaml"
+            fi
+          done
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -90,8 +106,25 @@ jobs:
         with:
           version: v3.15.4
 
-      - name: Helm lint
-        run: helm lint "$CHART_PATH"
+      - name: Helm lint all charts
+        run: |
+          for chart in \
+            charts/api \
+            charts/gateway \
+            charts/hiresphere \
+            charts/hr-studio \
+            charts/interview \
+            charts/jobs \
+            charts/network \
+            charts/profile \
+            charts/projects \
+            charts/scale \
+            charts/workspace; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "Linting chart: $chart"
+              helm lint "$chart"
+            fi
+          done
 
       - name: Helm template smoke test
         run: |
@@ -122,6 +155,25 @@ jobs:
             --set database.auth.existingSecret=external-database-secret > /tmp/hiresphere-external-secret.yaml
           grep -q "name: external-database-secret" /tmp/hiresphere-external-secret.yaml
 
+          for chart in \
+            charts/api \
+            charts/gateway \
+            charts/hr-studio \
+            charts/interview \
+            charts/jobs \
+            charts/network \
+            charts/profile \
+            charts/projects \
+            charts/scale \
+            charts/workspace; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "Rendering $chart"
+              helm template "$(basename "$chart")" "$chart" \
+                --namespace "$KUBE_NAMESPACE" > "/tmp/$(basename "$chart")-rendered.yaml"
+              grep -q "kind: Deployment" "/tmp/$(basename "$chart")-rendered.yaml"
+            fi
+          done
+
   integration:
     name: Validate Kubernetes Deployment
     if: github.event_name != 'workflow_dispatch' || inputs.component == 'all' || inputs.component == 'gateway'
@@ -133,17 +185,27 @@ jobs:
 
       - name: Render Helm manifests for Kubernetes validation
         run: |
-          helm template "$RELEASE_NAME" "$CHART_PATH" \
-            --namespace "$KUBE_NAMESPACE" \
-            --set fullnameOverride="$RELEASE_NAME" \
-            --set image.repository="$DOCKERHUB_REPOSITORY" \
-            --set image.tag="1.0" > /tmp/hiresphere-rendered.yaml
+          for chart in \
+            charts/api \
+            charts/gateway \
+            charts/hr-studio \
+            charts/interview \
+            charts/jobs \
+            charts/network \
+            charts/profile \
+            charts/projects \
+            charts/scale \
+            charts/workspace; do
+            echo "Rendering chart: $chart"
+            helm template "$(basename "$chart")" "$chart" \
+              --namespace "$KUBE_NAMESPACE" > "/tmp/$(basename "$chart")-rendered.yaml"
+            grep -q "kind: Deployment" "/tmp/$(basename "$chart")-rendered.yaml"
+          done
 
-          grep -q "kind: Deployment" /tmp/hiresphere-rendered.yaml
-          grep -q "app.kubernetes.io/component: gateway" /tmp/hiresphere-rendered.yaml
-          grep -q "app.kubernetes.io/component: api" /tmp/hiresphere-rendered.yaml
-          grep -q "app.kubernetes.io/component: workspace" /tmp/hiresphere-rendered.yaml
-          grep -q "app.kubernetes.io/component: scale" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: gateway" /tmp/gateway-rendered.yaml
+          grep -q "app.kubernetes.io/component: api" /tmp/api-rendered.yaml
+          grep -q "app.kubernetes.io/component: workspace" /tmp/workspace-rendered.yaml
+          grep -q "app.kubernetes.io/component: scale" /tmp/scale-rendered.yaml
 
   gateway-image:
     name: Publish Gateway Image
