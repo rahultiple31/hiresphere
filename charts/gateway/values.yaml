@@ -10,6 +10,17 @@ service:
   port: 8080
   targetPort: 8080
 
+upstreams:
+  workspace: workspace-service:8080
+  jobs: jobs-service:8080
+  projects: projects-service:8080
+  network: network-service:8080
+  interview: interview-service:8080
+  profile: profile-service:8080
+  hrStudio: hr-studio-service:8080
+  scale: scale-service:8080
+  api: api-service:8080
+
 ingress:
   enabled: false
   className: ""
