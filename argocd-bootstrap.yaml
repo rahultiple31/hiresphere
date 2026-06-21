@@ -1,0 +1,104 @@
+# Argo CD bootstrap resources for HireSphere
+# Apply these after Argo CD is installed in the cluster.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hiresphere
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: regcred
+  namespace: hiresphere
+type: kubernetes.io/dockerconfigjson
+stringData:
+  .dockerconfigjson: |
+    {
+      "auths": {
+        "https://index.docker.io/v1/": {
+          "auth": "<base64-encoded-dockerhub-username:token>"
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hiresphere-tls
+  namespace: hiresphere
+type: kubernetes.io/tls
+stringData:
+  tls.crt: |
+    <your-cert-chain>
+  tls.key: |
+    <your-private-key>
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: hiresphere-project
+  namespace: argocd
+spec:
+  description: HireSphere production deployment
+  sourceRepos:
+    - https://github.com/your-org/hiresphere.git
+  destinations:
+    - namespace: hiresphere
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: Secret
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: networking.k8s.io
+      kind: Ingress
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: networking.k8s.io
+      kind: Ingress
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hiresphere
+  namespace: argocd
+spec:
+  project: hiresphere-project
+  source:
+    repoURL: https://github.com/your-org/hiresphere.git
+    targetRevision: main
+    path: charts/hiresphere
+    helm:
+      valueFiles:
+        - values-prod.example.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hiresphere
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

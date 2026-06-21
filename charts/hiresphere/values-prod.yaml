@@ -1,0 +1,118 @@
+# Production values for deploying HireSphere on a real Kubernetes cluster.
+# Replace placeholders with your registry, domain, and secret names.
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/your-org/hiresphere-gateway
+  pullPolicy: IfNotPresent
+  tag: "1.0"
+  digest: ""
+
+api:
+  enabled: true
+  existingSecret: ""
+  sessionSecret: ""
+  appOrigin: "https://hiresphere.example.com"
+  cookieSecure: true
+  image:
+    repository: ghcr.io/your-org/hiresphere-api
+    tag: "1.0"
+  port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+microservices:
+  - name: workspace
+    repository: ghcr.io/your-org/hiresphere-workspace
+    tag: "1.0"
+  - name: jobs
+    repository: ghcr.io/your-org/hiresphere-jobs
+    tag: "1.0"
+  - name: projects
+    repository: ghcr.io/your-org/hiresphere-projects
+    tag: "1.0"
+  - name: network
+    repository: ghcr.io/your-org/hiresphere-network
+    tag: "1.0"
+  - name: interview
+    repository: ghcr.io/your-org/hiresphere-interview
+    tag: "1.0"
+  - name: profile
+    repository: ghcr.io/your-org/hiresphere-profile
+    tag: "1.0"
+  - name: hr-studio
+    repository: ghcr.io/your-org/hiresphere-hr-studio
+    tag: "1.0"
+  - name: scale
+    repository: ghcr.io/your-org/hiresphere-scale
+    tag: "1.0"
+
+# Use a real pull secret for private registries.
+imagePullSecrets:
+  - name: regcred
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  nodePort: null
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+  hosts:
+    - host: hiresphere.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: hiresphere-tls
+      hosts:
+        - hiresphere.example.com
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+database:
+  enabled: true
+  auth:
+    # If you already manage a Secret externally, set it here.
+    existingSecret: ""
+    postgresDatabase: hiresphere
+    postgresUsername: hiresphere
+    postgresPassword: ""
+    mongodbDatabase: hiresphere
+    mongodbRootUsername: hiresphere_admin
+    mongodbRootPassword: ""
+  persistence:
+    enabled: true
+    # Set this to your cluster's storage class if needed.
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    postgresSize: 8Gi
+    mongodbSize: 8Gi

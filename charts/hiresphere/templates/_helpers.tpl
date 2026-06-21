@@ -58,3 +58,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "hiresphere.apiSecretName" -}}
+{{- default (printf "%s-api" (include "hiresphere.fullname" .)) .Values.api.existingSecret -}}
+{{- end -}}

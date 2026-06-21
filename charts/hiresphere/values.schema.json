@@ -2,6 +2,26 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "api": {
+      "type": "object",
+      "required": ["enabled", "image", "port"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "existingSecret": { "type": "string" },
+        "sessionSecret": { "type": "string" },
+        "appOrigin": { "type": "string" },
+        "cookieSecure": { "type": "boolean" },
+        "image": {
+          "type": "object",
+          "required": ["repository", "tag"],
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string", "minLength": 1 }
+          }
+        },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      }
+    },
     "database": {
       "type": "object",
       "required": ["enabled", "auth", "postgresql", "mongodb", "service", "persistence"],
