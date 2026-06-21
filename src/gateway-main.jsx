@@ -28,21 +28,35 @@ const workspaceAudienceTabs = {
   builders: "Build"
 };
 
+const defaultCandidateProfile = {
+  name: "Rahul Tiple",
+  role: "DevOps Engineer",
+  company: "Alyssum Global Services Pvt Ltd"
+};
+
+function loadCandidateProfile() {
+  try {
+    return { ...defaultCandidateProfile, ...JSON.parse(localStorage.getItem("hiresphere-profile") || "{}") };
+  } catch {
+    return defaultCandidateProfile;
+  }
+}
+
 function activeHash() {
   const value = window.location.hash.slice(1);
   return routes[value] ? value : "workspace";
 }
 
-function SidebarProfile() {
+function SidebarProfile({ profile, onEdit }) {
   return <section className="profile-overview-card sidebar-profile-card" aria-label="Candidate profile overview">
     <div className="profile-overview-main">
       <div className="profile-completion">
         <div className="profile-avatar" aria-label="Rahul Tiple profile photo">RT</div>
         <strong>100%</strong>
       </div>
-      <h2>Rahul Tiple</h2>
-      <p>DevOps Engineer</p>
-      <p className="profile-company">@ Alyssum Global Services Pvt Ltd</p>
+      <button className="profile-name-button" onClick={onEdit} aria-label={`Edit ${profile.name}'s profile`}>{profile.name}</button>
+      <p>{profile.role}</p>
+      <p className="profile-company">@ {profile.company}</p>
       <small>Last updated 10m ago</small>
     </div>
   </section>;
@@ -59,6 +73,7 @@ function App() {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [search, setSearch] = useState("");
   const [workspaceAudience, setWorkspaceAudience] = useState("talent");
+  const [candidateProfile, setCandidateProfile] = useState(loadCandidateProfile);
   const [loading, setLoading] = useState(true);
   const [frameHeight, setFrameHeight] = useState(760);
   const frame = useRef(null);
@@ -82,6 +97,11 @@ function App() {
     const onMessage = (event) => {
       if (event.origin !== window.location.origin) return;
       if (event.data?.type === "hiresphere:navigate") go(event.data.view);
+      if (event.data?.type === "hiresphere:profile-updated" && event.data.profile) {
+        const updatedProfile = { ...defaultCandidateProfile, ...event.data.profile };
+        setCandidateProfile(updatedProfile);
+        localStorage.setItem("hiresphere-profile", JSON.stringify(updatedProfile));
+      }
       if (event.data?.type === "hiresphere:notify") {
         setNotifications((items) => [[event.data.title, event.data.body], ...items]);
         setTrayOpen(true);
@@ -112,7 +132,7 @@ function App() {
         <span><strong>HireSphere</strong><small>Talent OS</small></span>
       </a>
       <nav className="nav-groups">
-        <SidebarProfile />
+        <SidebarProfile profile={candidateProfile} onEdit={() => go("profile")} />
         {Object.entries(routes).map(([key, [label,, icon]]) =>
           <button key={key} className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
             <span className="nav-icon">{icon}</span>{label}

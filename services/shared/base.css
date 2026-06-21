@@ -869,6 +869,35 @@ h2 {
   gap: 12px;
 }
 
+.profile-editor {
+  width: 100%;
+}
+
+.profile-editor label {
+  width: 100%;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 700;
+}
+
+.profile-editor input,
+.profile-editor textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.profile-editor textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
 .upload-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

@@ -15,13 +15,15 @@
 .sidebar-profile-card .profile-completion::before,
 .sidebar-profile-card .profile-completion > strong { background: #fff; }
 .sidebar-profile-card .profile-avatar { width: 88px; height: 88px; }
-.sidebar-profile-card .profile-overview-main h2 { margin-top: 18px; color: #07101f; }
+.profile-name-button { margin: 18px 0 7px; padding: 0; border: 0; background: transparent; color: #07101f; font-size: 1.45rem; font-weight: 800; letter-spacing: -.03em; }
+.profile-name-button:hover { color: var(--teal); text-decoration: underline; text-underline-offset: 3px; }
 .sidebar-profile-card .profile-overview-main p { color: #17201d; }
 .sidebar-profile-card .profile-overview-main small { color: #67716d; }
 body.dark .profile-overview-card.sidebar-profile-card { border-color: #39443f; background: #1b2320; color: #fff; }
 body.dark .sidebar-profile-card .profile-completion::before,
 body.dark .sidebar-profile-card .profile-completion > strong { background: #1b2320; }
-body.dark .sidebar-profile-card .profile-overview-main h2 { color: #fff; }
+body.dark .profile-name-button { color: #fff; }
+body.dark .profile-name-button:hover { color: #50e3b3; }
 body.dark .sidebar-profile-card .profile-overview-main p { color: #f3f8f5; }
 body.dark .sidebar-profile-card .profile-overview-main small { color: #c7d2cd; }
 .sidebar-status { margin-top: 14px; color: var(--muted); font-size: .76rem; display: flex; align-items: center; gap: 8px; }
