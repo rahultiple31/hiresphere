@@ -105,3 +105,74 @@ readinessProbe:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+database:
+  enabled: true
+
+  auth:
+    # Leave passwords empty to generate strong credentials on first install.
+    # Existing generated credentials are retained during Helm upgrades.
+    existingSecret: ""
+    postgresDatabase: hiresphere
+    postgresUsername: hiresphere
+    postgresPassword: ""
+    mongodbDatabase: hiresphere
+    mongodbRootUsername: hiresphere_admin
+    mongodbRootPassword: ""
+
+  postgresql:
+    image:
+      repository: postgres
+      tag: "16-alpine"
+      pullPolicy: IfNotPresent
+    port: 5432
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  mongodb:
+    image:
+      repository: mongo
+      tag: "7.0"
+      pullPolicy: IfNotPresent
+    port: 27017
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+  service:
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    postgresSize: 8Gi
+    mongodbSize: 8Gi
+
+  podSecurityContext:
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
+    supplementalGroups:
+      - 70
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: false
+    runAsNonRoot: true
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

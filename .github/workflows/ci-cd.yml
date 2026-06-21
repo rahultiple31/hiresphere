@@ -69,6 +69,11 @@ jobs:
           done
           test -f "$CHART_PATH/Chart.yaml"
           test -f "$CHART_PATH/values.yaml"
+          test -f "$CHART_PATH/values.schema.json"
+          test -f "$CHART_PATH/templates/database-secret.yaml"
+          test -f "$CHART_PATH/templates/database-configmap.yaml"
+          test -f "$CHART_PATH/templates/database-statefulset.yaml"
+          test -f "$CHART_PATH/templates/database-service.yaml"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -95,7 +100,28 @@ jobs:
             --namespace "$KUBE_NAMESPACE" \
             --set fullnameOverride="$RELEASE_NAME" \
             --set image.repository="$DOCKERHUB_REPOSITORY" \
-            --set image.tag="1.0"
+            --set image.tag="1.0" > /tmp/hiresphere-rendered.yaml
+          grep -q "kind: StatefulSet" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: database" /tmp/hiresphere-rendered.yaml
+          grep -q "name: postgresql" /tmp/hiresphere-rendered.yaml
+          grep -q "name: mongodb" /tmp/hiresphere-rendered.yaml
+          grep -q "01-postgresql-schema.sql" /tmp/hiresphere-rendered.yaml
+          grep -q "02-mongodb-schema.js" /tmp/hiresphere-rendered.yaml
+          helm template "$RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$KUBE_NAMESPACE" \
+            --set database.enabled=false > /tmp/hiresphere-no-database.yaml
+          if grep -q "app.kubernetes.io/component: database" /tmp/hiresphere-no-database.yaml; then
+            echo "Database resources rendered while database.enabled=false"
+            exit 1
+          fi
+          helm template "$RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$KUBE_NAMESPACE" \
+            --set database.persistence.enabled=false > /tmp/hiresphere-ephemeral-database.yaml
+          grep -q "emptyDir: {}" /tmp/hiresphere-ephemeral-database.yaml
+          helm template "$RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$KUBE_NAMESPACE" \
+            --set database.auth.existingSecret=external-database-secret > /tmp/hiresphere-external-secret.yaml
+          grep -q "name: external-database-secret" /tmp/hiresphere-external-secret.yaml
 
   integration:
     name: Build and Test Complete Platform

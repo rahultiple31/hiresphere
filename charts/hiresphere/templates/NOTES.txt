@@ -25,3 +25,20 @@ Port forward:
   open http://localhost:8080
 {{- end }}
 {{- end }}
+
+{{- if .Values.database.enabled }}
+
+Database workload:
+  Pod: {{ include "hiresphere.databaseFullname" . }}-0
+  Service: {{ include "hiresphere.databaseFullname" . }}
+  PostgreSQL: {{ include "hiresphere.databaseFullname" . }}:{{ .Values.database.postgresql.port }}/{{ .Values.database.auth.postgresDatabase }}
+  MongoDB: {{ include "hiresphere.databaseFullname" . }}:{{ .Values.database.mongodb.port }}/{{ .Values.database.auth.mongodbDatabase }}
+  Credentials secret: {{ include "hiresphere.databaseSecretName" . }}
+
+Database status:
+  kubectl get statefulset,pod,pvc,service -l app.kubernetes.io/component=database -n {{ .Release.Namespace }}
+
+Read generated PostgreSQL credentials:
+  kubectl get secret {{ include "hiresphere.databaseSecretName" . }} -n {{ .Release.Namespace }} -o jsonpath='{.data.postgres-username}' | base64 --decode
+  kubectl get secret {{ include "hiresphere.databaseSecretName" . }} -n {{ .Release.Namespace }} -o jsonpath='{.data.postgres-password}' | base64 --decode
+{{- end }}

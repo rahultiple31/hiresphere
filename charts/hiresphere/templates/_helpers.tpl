@@ -2,6 +2,14 @@
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "hiresphere.databaseFullname" -}}
+{{- include "hiresphere.componentFullname" (dict "root" . "component" "database") -}}
+{{- end -}}
+
+{{- define "hiresphere.databaseSecretName" -}}
+{{- default (include "hiresphere.databaseFullname" .) .Values.database.auth.existingSecret -}}
+{{- end -}}
+
 {{- define "hiresphere.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}

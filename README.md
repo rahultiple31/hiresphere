@@ -23,6 +23,19 @@ HireSphere is a React 19 talent marketplace composed of a persistent gateway she
 
 The services keep independent Docker images and Kubernetes Deployments. React is compiled during the image build; production containers serve only optimized static assets through unprivileged Nginx.
 
+## Data storage
+
+The Helm chart includes one database StatefulSet pod with two purpose-specific containers:
+
+- PostgreSQL stores transactional SQL records: accounts, candidate profiles, skills, jobs, applications, projects, milestones, interviews, and payments.
+- MongoDB stores flexible NoSQL documents: feed posts, notifications, activity events, and search documents.
+- One internal Kubernetes Service exposes PostgreSQL on `5432` and MongoDB on `27017`.
+- Separate persistent volume claims protect PostgreSQL and MongoDB data across pod restarts.
+- Initialization scripts create relational constraints, indexes, MongoDB validators, and document indexes on the first startup.
+- Credentials are generated on the first Helm install and retained on upgrades. Production clusters can instead reference an externally managed Secret.
+
+The current frontend containers serve static React assets and do not connect directly to either database. Backend/API services should consume these internal endpoints and credentials; database credentials must never be sent to browser code.
+
 ## Local development
 
 Requires Node.js 22+.
@@ -64,3 +77,28 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 - `.github/workflows/static.yml` builds `dist/` and deploys it to GitHub Pages.
 
 Only the gateway publishes a host port. Internal containers communicate through the private `hiresphere` network.
+
+Install the application and database layer:
+
+```bash
+helm upgrade --install hiresphere charts/hiresphere \
+  --namespace hiresphere \
+  --create-namespace
+```
+
+For production, provide a pre-created Secret instead of chart-managed credentials. It must contain `postgres-database`, `postgres-username`, `postgres-password`, `mongodb-database`, `mongodb-root-username`, and `mongodb-root-password`:
+
+```bash
+helm upgrade --install hiresphere charts/hiresphere \
+  --namespace hiresphere \
+  --create-namespace \
+  --set database.auth.existingSecret=hiresphere-database-credentials
+```
+
+Check the unified database workload:
+
+```bash
+kubectl get statefulset,pod,pvc,service \
+  -n hiresphere \
+  -l app.kubernetes.io/component=database
+```
