@@ -45,13 +45,15 @@ npm ci
 npm run dev
 ```
 
-For the complete production-style platform:
+For a Kubernetes deployment, use the Helm chart directly instead of Docker Compose:
 
 ```bash
-docker compose up --build
+helm upgrade --install hiresphere charts/hiresphere \
+  --namespace hiresphere \
+  --create-namespace
 ```
 
-Open `http://localhost:8080`.
+If you still want a quick local containerized smoke test, Docker Compose may be used only for debugging; the actual application deployment flow for this repo is Kubernetes + Helm.
 
 ## Production builds
 
@@ -71,9 +73,9 @@ The assembled static site is written to `dist/`. Individual component artifacts 
 
 ## Deployment
 
-- Docker Compose builds and runs one gateway plus eight micro-frontends.
-- The Helm chart deploys the same nine images to Kubernetes.
-- `.github/workflows/ci-cd.yml` compiles React, validates Helm, smoke-tests all routes, and publishes selected images.
+- Docker Compose is optional only for local debugging or smoke testing.
+- The Helm chart is the production deployment path for all microservices on Kubernetes.
+- `.github/workflows/ci-cd.yml` compiles React, validates Helm manifests, and publishes selected images.
 - `.github/workflows/static.yml` builds `dist/` and deploys it to GitHub Pages.
 
 Only the gateway publishes a host port. Internal containers communicate through the private `hiresphere` network.

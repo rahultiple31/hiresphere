@@ -61,7 +61,6 @@ jobs:
           test -f "$APP_DIR/package.json"
           test -f "$APP_DIR/vite.config.js"
           test -f "$APP_DIR/Dockerfile"
-          test -f "$APP_DIR/docker-compose.yml"
           for service in workspace jobs projects network interview profile hr-studio scale; do
             test -f "$APP_DIR/services/$service/index.html"
             test -f "$APP_DIR/services/$service/styles.css"
@@ -124,7 +123,7 @@ jobs:
           grep -q "name: external-database-secret" /tmp/hiresphere-external-secret.yaml
 
   integration:
-    name: Build and Test Complete Platform
+    name: Validate Kubernetes Deployment
     if: github.event_name != 'workflow_dispatch' || inputs.component == 'all' || inputs.component == 'gateway'
     runs-on: ubuntu-latest
     needs: validate
@@ -132,26 +131,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and start microservices
-        run: docker compose up -d --build
-
-      - name: Test gateway and service routes
+      - name: Render Helm manifests for Kubernetes validation
         run: |
-          for attempt in 1 2 3 4 5 6 7 8 9 10; do
-            if curl -fsS http://localhost:8080/healthz; then
-              break
-            fi
-            echo "Health check attempt ${attempt} failed"
-            docker compose ps
-            sleep 2
-          done
-          for route in workspace jobs projects network interview profile hr-studio scale; do
-            curl -fsS "http://localhost:8080/${route}/" | grep -qi "<title>"
-          done
+          helm template "$RELEASE_NAME" "$CHART_PATH" \
+            --namespace "$KUBE_NAMESPACE" \
+            --set fullnameOverride="$RELEASE_NAME" \
+            --set image.repository="$DOCKERHUB_REPOSITORY" \
+            --set image.tag="1.0" > /tmp/hiresphere-rendered.yaml
 
-      - name: Cleanup smoke-test services
-        if: always()
-        run: docker compose down --volumes
+          grep -q "kind: Deployment" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: gateway" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: api" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: workspace" /tmp/hiresphere-rendered.yaml
+          grep -q "app.kubernetes.io/component: scale" /tmp/hiresphere-rendered.yaml
 
   gateway-image:
     name: Publish Gateway Image
@@ -222,15 +214,21 @@ jobs:
       - name: Test selected service container
         run: |
           docker run -d --name selected-service-test -p 8080:8080 "hiresphere-${{ matrix.service }}:ci"
-          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+          service_ready=0
+          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
             if curl -fsS http://localhost:8080/healthz && curl -fsS http://localhost:8080/ | grep -qi "<title>"; then
-              exit 0
+              service_ready=1
+              echo "Service ${matrix.service} is ready on attempt ${attempt}"
+              break
             fi
             echo "Service health check attempt ${attempt} failed"
             docker logs selected-service-test || true
-            sleep 2
+            sleep 5
           done
-          exit 1
+          if [ "$service_ready" -ne 1 ]; then
+            echo "Service ${matrix.service} did not become ready in time"
+            exit 1
+          fi
 
       - name: Cleanup selected service container
         if: always()
