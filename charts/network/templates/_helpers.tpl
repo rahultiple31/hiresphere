@@ -1,5 +1,5 @@
 {{- define "network.fullname" -}}
-{{- .Release.Name }}-network
+network-service
 {{- end }}
 
 {{- define "network.labels" -}}

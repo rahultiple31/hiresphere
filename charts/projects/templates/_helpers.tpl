@@ -1,5 +1,5 @@
 {{- define "projects.fullname" -}}
-{{- .Release.Name }}-projects
+projects-service
 {{- end }}
 
 {{- define "projects.labels" -}}

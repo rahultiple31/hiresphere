@@ -61,7 +61,7 @@ metadata:
 spec:
   description: HireSphere per-service GitOps project
   sourceRepos:
-    - https://github.com/your-org/hiresphere.git
+    - https://github.com/rahultiple31/hiresphere.git
   destinations:
     - namespace: argocd
       server: https://kubernetes.default.svc

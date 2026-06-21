@@ -6,9 +6,29 @@ metadata:
 spec:
   description: HireSphere production deployment
   sourceRepos:
-    - https://github.com/your-org/hiresphere.git
+    - https://github.com/rahultiple31/hiresphere.git
   destinations:
     - namespace: hiresphere
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-gateway
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-api
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-workspace
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-jobs
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-projects
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-network
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-interview
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-profile
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-hr-studio
+      server: https://kubernetes.default.svc
+    - namespace: hiresphere-scale
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: ''

@@ -2,17 +2,18 @@ from pathlib import Path
 from textwrap import dedent
 
 root = Path(__file__).resolve().parents[1]
+repo_url = "https://github.com/rahultiple31/hiresphere.git"
 services = [
-    ("gateway", "ghcr.io/your-org/hiresphere-gateway", "gateway"),
-    ("api", "ghcr.io/your-org/hiresphere-api", "api"),
-    ("workspace", "ghcr.io/your-org/hiresphere-workspace", "workspace"),
-    ("jobs", "ghcr.io/your-org/hiresphere-jobs", "jobs"),
-    ("projects", "ghcr.io/your-org/hiresphere-projects", "projects"),
-    ("network", "ghcr.io/your-org/hiresphere-network", "network"),
-    ("interview", "ghcr.io/your-org/hiresphere-interview", "interview"),
-    ("profile", "ghcr.io/your-org/hiresphere-profile", "profile"),
-    ("hr-studio", "ghcr.io/your-org/hiresphere-hr-studio", "hr-studio"),
-    ("scale", "ghcr.io/your-org/hiresphere-scale", "scale"),
+    ("gateway", "rahultipledocker/hiresphere-gateway", "gateway"),
+    ("api", "rahultipledocker/hiresphere-api", "api"),
+    ("workspace", "rahultipledocker/hiresphere-workspace", "workspace"),
+    ("jobs", "rahultipledocker/hiresphere-jobs", "jobs"),
+    ("projects", "rahultipledocker/hiresphere-projects", "projects"),
+    ("network", "rahultipledocker/hiresphere-network", "network"),
+    ("interview", "rahultipledocker/hiresphere-interview", "interview"),
+    ("profile", "rahultipledocker/hiresphere-profile", "profile"),
+    ("hr-studio", "rahultipledocker/hiresphere-hr-studio", "hr-studio"),
+    ("scale", "rahultipledocker/hiresphere-scale", "scale"),
 ]
 
 namespace_map = {
@@ -96,7 +97,7 @@ for name, image, chart_name in services:
         chart_dir / "templates" / "_helpers.tpl",
         f"""
         {{- define "{chart_name}.fullname" -}}
-        {{- .Release.Name }}-{chart_name}
+        {name}-service
         {{- end }}
 
         {{- define "{chart_name}.labels" -}}
@@ -204,7 +205,7 @@ for name, image, chart_name in services:
 bootstrap = root / "argocd-bootstrap.yaml"
 write(
     bootstrap,
-    """
+    f"""
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -268,7 +269,7 @@ write(
     spec:
       description: HireSphere per-service GitOps project
       sourceRepos:
-        - https://github.com/your-org/hiresphere.git
+        - {repo_url}
       destinations:
         - namespace: argocd
           server: https://kubernetes.default.svc
@@ -330,7 +331,7 @@ for service_name, _, chart_name in services:
         spec:
           project: hiresphere-project
           source:
-            repoURL: https://github.com/your-org/hiresphere.git
+            repoURL: {repo_url}
             targetRevision: main
             path: charts/{chart_name}
           destination:

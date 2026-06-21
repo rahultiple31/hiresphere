@@ -1,5 +1,5 @@
 {{- define "profile.fullname" -}}
-{{- .Release.Name }}-profile
+profile-service
 {{- end }}
 
 {{- define "profile.labels" -}}

@@ -1,5 +1,5 @@
 {{- define "hr-studio.fullname" -}}
-{{- .Release.Name }}-hr-studio
+hr-studio-service
 {{- end }}
 
 {{- define "hr-studio.labels" -}}

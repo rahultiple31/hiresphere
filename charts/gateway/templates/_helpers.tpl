@@ -1,5 +1,5 @@
 {{- define "gateway.fullname" -}}
-{{- .Release.Name }}-gateway
+gateway-service
 {{- end }}
 
 {{- define "gateway.labels" -}}

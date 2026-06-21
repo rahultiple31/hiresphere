@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/your-org/hiresphere-gateway
+  repository: rahultipledocker/hiresphere-gateway
   tag: "1.0"
   pullPolicy: IfNotPresent
 
@@ -11,15 +11,15 @@ service:
   targetPort: 8080
 
 upstreams:
-  workspace: workspace-service:8080
-  jobs: jobs-service:8080
-  projects: projects-service:8080
-  network: network-service:8080
-  interview: interview-service:8080
-  profile: profile-service:8080
-  hrStudio: hr-studio-service:8080
-  scale: scale-service:8080
-  api: api-service:8080
+  workspace: workspace-service.hiresphere-workspace.svc.cluster.local:8080
+  jobs: jobs-service.hiresphere-jobs.svc.cluster.local:8080
+  projects: projects-service.hiresphere-projects.svc.cluster.local:8080
+  network: network-service.hiresphere-network.svc.cluster.local:8080
+  interview: interview-service.hiresphere-interview.svc.cluster.local:8080
+  profile: profile-service.hiresphere-profile.svc.cluster.local:8080
+  hrStudio: hr-studio-service.hiresphere-hr-studio.svc.cluster.local:8080
+  scale: scale-service.hiresphere-scale.svc.cluster.local:8080
+  api: api-service.hiresphere-api.svc.cluster.local:8080
 
 ingress:
   enabled: false

@@ -6,12 +6,12 @@ metadata:
 spec:
   project: hiresphere-project
   source:
-    repoURL: https://github.com/your-org/hiresphere.git
+    repoURL: https://github.com/rahultiple31/hiresphere.git
     targetRevision: main
     path: charts/hiresphere
     helm:
       valueFiles:
-        - values-prod.example.yaml
+        - values-prod.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: hiresphere

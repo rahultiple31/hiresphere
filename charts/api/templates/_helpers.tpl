@@ -1,5 +1,5 @@
 {{- define "api.fullname" -}}
-{{- .Release.Name }}-api
+api-service
 {{- end }}
 
 {{- define "api.labels" -}}

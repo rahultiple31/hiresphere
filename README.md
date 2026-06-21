@@ -173,4 +173,9 @@ kubectl apply -f argocd-bootstrap.yaml
 kubectl apply -f argocd-applications/
 ```
 
+The manifests use the public HTTPS repository URL
+`https://github.com/rahultiple31/hiresphere.git`. Use that exact URL in the
+Argo CD UI or CLI. Do not use `git@github.com:rahultiple31/hiresphere.git`
+unless an SSH deploy key has first been registered in Argo CD.
+
 For production, each service can still use explicit values overrides and image pull secrets. The Argo CD project allows the platform to sync each chart into its own namespace independently.

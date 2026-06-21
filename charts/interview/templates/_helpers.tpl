@@ -1,5 +1,5 @@
 {{- define "interview.fullname" -}}
-{{- .Release.Name }}-interview
+interview-service
 {{- end }}
 
 {{- define "interview.labels" -}}

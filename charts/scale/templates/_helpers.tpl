@@ -1,5 +1,5 @@
 {{- define "scale.fullname" -}}
-{{- .Release.Name }}-scale
+scale-service
 {{- end }}
 
 {{- define "scale.labels" -}}

@@ -1,5 +1,5 @@
 {{- define "workspace.fullname" -}}
-{{- .Release.Name }}-workspace
+workspace-service
 {{- end }}
 
 {{- define "workspace.labels" -}}

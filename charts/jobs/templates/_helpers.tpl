@@ -1,5 +1,5 @@
 {{- define "jobs.fullname" -}}
-{{- .Release.Name }}-jobs
+jobs-service
 {{- end }}
 
 {{- define "jobs.labels" -}}

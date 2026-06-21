@@ -54,6 +54,8 @@ jobs:
 
       - name: Check required files
         run: |
+          ! grep -R "github.com/your-org\|git@github.com" argocd-application.yaml argocd-bootstrap.yaml argocd-project.yaml argocd-applications
+          test "$(grep -R 'repoURL: https://github.com/rahultiple31/hiresphere.git' argocd-applications/*.yaml | wc -l)" -eq 10
           test -f "$APP_DIR/index.html"
           test -f "$APP_DIR/gateway/styles.css"
           test -f "$APP_DIR/src/gateway-main.jsx"
@@ -173,6 +175,9 @@ jobs:
               grep -q "kind: Deployment" "/tmp/$(basename "$chart")-rendered.yaml"
             fi
           done
+
+          grep -q "workspace-service.hiresphere-workspace.svc.cluster.local:8080" /tmp/gateway-rendered.yaml
+          grep -q "api-service.hiresphere-api.svc.cluster.local:8080" /tmp/gateway-rendered.yaml
 
   integration:
     name: Validate Kubernetes Deployment
