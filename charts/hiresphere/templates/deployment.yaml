@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "hiresphere.componentFullname" (dict "root" . "component" "gateway") }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "hiresphere.labels" . | nindent 4 }}
 spec:
@@ -66,6 +67,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "hiresphere.componentFullname" (dict "root" . "component" "api") }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "hiresphere.labels" . | nindent 4 }}
     app.kubernetes.io/component: api
@@ -169,6 +171,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "hiresphere.componentFullname" (dict "root" $ "component" .name) }}
+  namespace: {{ $.Release.Namespace | quote }}
   labels:
     {{- include "hiresphere.labels" $ | nindent 4 }}
     app.kubernetes.io/component: {{ .name }}

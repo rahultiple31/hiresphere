@@ -185,4 +185,9 @@ The manifests use the public HTTPS repository URL
 Argo CD UI or CLI. Do not use `git@github.com:rahultiple31/hiresphere.git`
 unless an SSH deploy key has first been registered in Argo CD.
 
+Every chart writes `.Release.Namespace` into its Kubernetes resources. The
+gateway reaches services in their isolated namespaces through Kubernetes DNS,
+for example `api-service.hiresphere-api.svc.cluster.local:8080` and
+`workspace-service.hiresphere-workspace.svc.cluster.local:8080`.
+
 For production, each service can still use explicit values overrides and image pull secrets. The Argo CD project allows the platform to sync each chart into its own namespace independently.

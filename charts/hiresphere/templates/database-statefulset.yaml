@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "hiresphere.databaseFullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "hiresphere.labels" . | nindent 4 }}
     app.kubernetes.io/component: database

@@ -169,10 +169,13 @@ jobs:
             charts/scale \
             charts/workspace; do
             if [ -f "$chart/Chart.yaml" ]; then
-              echo "Rendering $chart"
-              helm template "$(basename "$chart")" "$chart" \
-                --namespace "$KUBE_NAMESPACE" > "/tmp/$(basename "$chart")-rendered.yaml"
-              grep -q "kind: Deployment" "/tmp/$(basename "$chart")-rendered.yaml"
+              chart_name="$(basename "$chart")"
+              namespace="hiresphere-${chart_name}"
+              echo "Rendering $chart in $namespace"
+              helm template "$chart_name" "$chart" \
+                --namespace "$namespace" > "/tmp/${chart_name}-rendered.yaml"
+              grep -q "kind: Deployment" "/tmp/${chart_name}-rendered.yaml"
+              grep -q "namespace: \"${namespace}\"" "/tmp/${chart_name}-rendered.yaml"
             fi
           done
 
@@ -201,10 +204,13 @@ jobs:
             charts/projects \
             charts/scale \
             charts/workspace; do
-            echo "Rendering chart: $chart"
-            helm template "$(basename "$chart")" "$chart" \
-              --namespace "$KUBE_NAMESPACE" > "/tmp/$(basename "$chart")-rendered.yaml"
-            grep -q "kind: Deployment" "/tmp/$(basename "$chart")-rendered.yaml"
+            chart_name="$(basename "$chart")"
+            namespace="hiresphere-${chart_name}"
+            echo "Rendering chart: $chart in $namespace"
+            helm template "$chart_name" "$chart" \
+              --namespace "$namespace" > "/tmp/${chart_name}-rendered.yaml"
+            grep -q "kind: Deployment" "/tmp/${chart_name}-rendered.yaml"
+            grep -q "namespace: \"${namespace}\"" "/tmp/${chart_name}-rendered.yaml"
           done
 
           grep -q "app.kubernetes.io/component: gateway" /tmp/gateway-rendered.yaml

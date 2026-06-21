@@ -114,6 +114,7 @@ for name, image, chart_name in services:
         kind: Deployment
         metadata:
           name: {{ include "{chart_name}.fullname" . }}
+          namespace: {{ .Release.Namespace | quote }}
           labels:
             {{- include "{chart_name}.labels" . | nindent 8 }}
         spec:
@@ -148,6 +149,7 @@ for name, image, chart_name in services:
         kind: Service
         metadata:
           name: {{ include "{chart_name}.fullname" . }}
+          namespace: {{ .Release.Namespace | quote }}
           labels:
             {{- include "{chart_name}.labels" . | nindent 8 }}
         spec:
@@ -169,6 +171,7 @@ for name, image, chart_name in services:
         kind: Ingress
         metadata:
           name: {{ include "{chart_name}.fullname" . }}
+          namespace: {{ .Release.Namespace | quote }}
           labels:
             {{- include "{chart_name}.labels" . | nindent 8 }}
           {{- with .Values.ingress.annotations }}

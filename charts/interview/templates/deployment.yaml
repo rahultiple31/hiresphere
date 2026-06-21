@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "interview.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "interview.labels" . | nindent 4 }}
 spec:

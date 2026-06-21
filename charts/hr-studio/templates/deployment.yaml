@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "hr-studio.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "hr-studio.labels" . | nindent 4 }}
 spec:
