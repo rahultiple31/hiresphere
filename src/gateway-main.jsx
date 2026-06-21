@@ -133,7 +133,7 @@ function App() {
       </a>
       <nav className="nav-groups">
         <SidebarProfile profile={candidateProfile} onEdit={() => go("profile")} />
-        {Object.entries(routes).map(([key, [label,, icon]]) =>
+        {Object.entries(routes).filter(([key]) => key !== "profile").map(([key, [label,, icon]]) =>
           <button key={key} className={`nav-item ${active === key ? "active" : ""}`} onClick={() => go(key)} aria-current={active === key ? "page" : undefined}>
             <span className="nav-icon">{icon}</span>{label}
           </button>
