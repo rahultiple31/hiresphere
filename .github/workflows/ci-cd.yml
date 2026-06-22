@@ -23,6 +23,7 @@ on:
         options:
           - all
           - gateway
+          - api
           - workspace
           - jobs
           - projects
@@ -40,7 +41,7 @@ env:
   APP_DIR: .
   CHART_PATH: charts/hiresphere
   IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/hiresphere-gateway
-  DOCKERHUB_REPOSITORY: rahultipledocker/hiresphere-gateway
+  DOCKERHUB_REPOSITORY: docker.io/rahultipledocker/hiresphere-gateway
   RELEASE_NAME: ${{ vars.HELM_RELEASE_NAME || 'hiresphere' }}
   KUBE_NAMESPACE: ${{ vars.KUBE_NAMESPACE || 'hiresphere' }}
 
@@ -63,6 +64,8 @@ jobs:
           test -f "$APP_DIR/package.json"
           test -f "$APP_DIR/vite.config.js"
           test -f "$APP_DIR/Dockerfile"
+          test -f "$APP_DIR/services/api/Dockerfile"
+          test -f "$APP_DIR/services/api/server.mjs"
           for service in workspace jobs projects network interview profile hr-studio scale; do
             test -f "$APP_DIR/services/$service/index.html"
             test -f "$APP_DIR/services/$service/styles.css"
@@ -276,7 +279,7 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        service: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.component != 'all' && inputs.component != 'gateway' && format('["{0}"]', inputs.component) || '["workspace","jobs","projects","network","interview","profile","hr-studio","scale"]') }}
+        service: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.component != 'all' && inputs.component != 'gateway' && format('["{0}"]', inputs.component) || '["api","workspace","jobs","projects","network","interview","profile","hr-studio","scale"]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -286,10 +289,21 @@ jobs:
 
       - name: Test selected service container
         run: |
-          docker run -d --name selected-service-test -p 8080:8080 "hiresphere-${{ matrix.service }}:ci"
+          if [ "${{ matrix.service }}" = "api" ]; then
+            docker run -d --name selected-service-test -p 8080:8080 \
+              -e SESSION_SECRET=ci-session-secret-with-at-least-32-characters \
+              "hiresphere-${{ matrix.service }}:ci"
+          else
+            docker run -d --name selected-service-test -p 8080:8080 "hiresphere-${{ matrix.service }}:ci"
+          fi
           service_ready=0
           for attempt in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-            if curl -fsS http://localhost:8080/healthz && curl -fsS http://localhost:8080/ | grep -qi "<title>"; then
+            if [ "${{ matrix.service }}" = "api" ]; then
+              health_check='curl -fsS http://localhost:8080/healthz'
+            else
+              health_check='curl -fsS http://localhost:8080/healthz && curl -fsS http://localhost:8080/ | grep -qi "<title>"'
+            fi
+            if sh -c "$health_check"; then
               service_ready=1
               echo "Service ${{ matrix.service }} is ready on attempt ${attempt}"
               break
@@ -329,7 +343,7 @@ jobs:
         with:
           images: |
             ghcr.io/${{ github.repository_owner }}/hiresphere-${{ matrix.service }}
-            rahultipledocker/hiresphere-${{ matrix.service }}
+            docker.io/rahultipledocker/hiresphere-${{ matrix.service }}
           tags: |
             type=raw,value=1.0
             type=raw,value=latest,enable={{is_default_branch}}

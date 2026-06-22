@@ -4,16 +4,16 @@ from textwrap import dedent
 root = Path(__file__).resolve().parents[1]
 repo_url = "https://github.com/rahultiple31/hiresphere.git"
 services = [
-    ("gateway", "rahultipledocker/hiresphere-gateway", "gateway"),
-    ("api", "rahultipledocker/hiresphere-api", "api"),
-    ("workspace", "rahultipledocker/hiresphere-workspace", "workspace"),
-    ("jobs", "rahultipledocker/hiresphere-jobs", "jobs"),
-    ("projects", "rahultipledocker/hiresphere-projects", "projects"),
-    ("network", "rahultipledocker/hiresphere-network", "network"),
-    ("interview", "rahultipledocker/hiresphere-interview", "interview"),
-    ("profile", "rahultipledocker/hiresphere-profile", "profile"),
-    ("hr-studio", "rahultipledocker/hiresphere-hr-studio", "hr-studio"),
-    ("scale", "rahultipledocker/hiresphere-scale", "scale"),
+    ("gateway", "docker.io/rahultipledocker/hiresphere-gateway", "gateway"),
+    ("api", "docker.io/rahultipledocker/hiresphere-api", "api"),
+    ("workspace", "docker.io/rahultipledocker/hiresphere-workspace", "workspace"),
+    ("jobs", "docker.io/rahultipledocker/hiresphere-jobs", "jobs"),
+    ("projects", "docker.io/rahultipledocker/hiresphere-projects", "projects"),
+    ("network", "docker.io/rahultipledocker/hiresphere-network", "network"),
+    ("interview", "docker.io/rahultipledocker/hiresphere-interview", "interview"),
+    ("profile", "docker.io/rahultipledocker/hiresphere-profile", "profile"),
+    ("hr-studio", "docker.io/rahultipledocker/hiresphere-hr-studio", "hr-studio"),
+    ("scale", "docker.io/rahultipledocker/hiresphere-scale", "scale"),
 ]
 
 namespace_map = {

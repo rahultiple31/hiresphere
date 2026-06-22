@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: rahultipledocker/hiresphere-gateway
+  repository: docker.io/rahultipledocker/hiresphere-gateway
   tag: "1.0"
   pullPolicy: IfNotPresent
 

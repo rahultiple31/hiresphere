@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: rahultipledocker/hiresphere-projects
+  repository: docker.io/rahultipledocker/hiresphere-projects
   tag: "1.0"
   pullPolicy: IfNotPresent
 

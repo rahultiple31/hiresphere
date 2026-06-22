@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: rahultipledocker/hiresphere-interview
+  repository: docker.io/rahultipledocker/hiresphere-interview
   tag: "1.0"
   pullPolicy: IfNotPresent
 
